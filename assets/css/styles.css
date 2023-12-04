@@ -21,7 +21,7 @@
 
 /*======================== BASE ==================*/
 *{
-   box-sizing: border-box;
+    box-sizing: border-box;
     padding: 0;
     margin: 0;
 }
@@ -54,7 +54,7 @@ img{
 /*======================== LOGIN ==================*/
 .login{
     position: relative;
-    height: 100vh;
+    height: 98vh;
     display: grid;
     align-items: center;
 }
