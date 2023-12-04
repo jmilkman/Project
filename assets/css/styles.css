@@ -52,6 +52,20 @@ img{
     height: auto;
 }
 /*======================== LOGIN ==================*/
+.login{
+    position: relative;
+    height: 100vh;
+    display: grid;
+    align-items: center;
+}
+
+.login__img{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
 
 /* Input focus move up label */
 
