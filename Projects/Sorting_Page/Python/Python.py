@@ -1,5 +1,16 @@
-import webbrowser
+from flask import Flask, render_template
+import sse
 import time
+import threading
+
+app = Flask(__name__)
+app.config["REDIS_URL"] = "redis://localhost"  # You need to have a Redis server running for Flask-SSE
+
+app.register_blueprint(sse, url_prefix='/stream')
+
+@app.route('/')
+def index():
+    return render_template('bubble_sort_visualization.html')
 
 def bubble_sort(data):
     n = len(data)
@@ -8,14 +19,15 @@ def bubble_sort(data):
             if data[j] > data[j+1]:
                 data[j], data[j+1] = data[j+1], data[j]
                 # Send data to the webpage for visualization
-                print(data)
+                with app.app_context():
+                    sse.publish({"data": data}, type='update')
                 time.sleep(0.5)  # Adjust the delay as needed
 
-# Example data
-data_to_sort = [4, 2, 7, 1, 9, 3]
+@app.route('/start_sorting')
+def start_sorting():
+    thread = threading.Thread(target=bubble_sort, args=([4, 2, 7, 1, 9, 3, 10],))
+    thread.start()
+    return "Sorting started"
 
-# Open the webpage in the default web browser
-webbrowser.open('bubble_sort_visualization.html')
-
-# Start the bubble sort algorithm
-bubble_sort(data_to_sort)
+if __name__ == '__main__':
+    app.run(debug=True)
