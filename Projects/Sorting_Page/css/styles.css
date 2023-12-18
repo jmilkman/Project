@@ -52,3 +52,27 @@ body{
 button:hover{
     background-color: #56697b;
 }
+#slider {
+}
+
+#slider::-webkit-slider-thumb {
+    border-radius: 50%; /* For WebKit browsers like Chrome and Safari */
+}
+
+#slider::-moz-range-thumb {
+    border-radius: 50%; /* For Firefox */
+}
+
+#slider::-webkit-slider-runnable-track {
+    background: linear-gradient(to right, var(--slider-color), var(--slider-color));
+    border-radius: 10px; /* Adjust the value as needed */
+    height: 5px;
+    text-align: center;
+}
+
+#slider::-moz-range-track {
+    background: linear-gradient(to right, var(--slider-color), var(--slider-color));
+    border-radius: 10px; /* Adjust the value as needed */
+    height: 5px;
+    text-align: center;
+}
