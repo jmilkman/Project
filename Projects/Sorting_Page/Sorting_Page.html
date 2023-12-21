@@ -10,25 +10,35 @@
 <body>
 <div class="container">
     <div class="bars_container" id="bars_container"></div>
+    <header class="header">
+        <p class="nav-heading">Sorting Visualizer</p>
+        <div class="buttons_container">
+            <div class="sliders_container">
+                <input
+                        type="range"
+                        id="slider"
+                        min="50"
+                        max="130"
+                        step="5"
+                        value="50"
+                />
+                <input
+                        type="range"
+                        id="slider2"
+                        min="50"
+                        max="130"
+                        step="5"
+                        value="50"
+                />
+            </div>
 
-    <input
-            type="range"
-            id="slider"
-            min="50"
-            max="130"
-            step="5"
-            value="50"
-            style="
-        --slider-color: #FF1879;
-    "
-    />
-
-        <select name="" id="algo">
-            <option value="bubble">Bubble Sort</option>
-        </select>
-        <button id="randomize_array_btn">Randomize Array</button>
-        <button id="sort_btn">Sort</button>
-    </div>
+            <select name="" id="algo">
+                <option value="bubble">Bubble Sort</option>
+            </select>
+            <button id="randomize_array_btn">Randomize Array</button>
+            <button id="sort_btn">Sort</button>
+        </div>
+    </header>
 </div>
 
 <script src="js/main.js"></script>
