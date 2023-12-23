@@ -95,7 +95,8 @@ button:hover {
 .sliders_container {
     display: flex;
     flex-direction: column;
-    margin-right: 20px; /* Adjust the margin between sliders and other elements */
+    align-items: flex-start; /* Align sliders to the left */
+    margin-right: 20px; /* Adjust margin as needed for spacing */
 }
 
 #slider,
@@ -140,4 +141,18 @@ button:hover {
     color: white;
     font-size: var(--large-font-size);
     font-family: var(--body-font);
+}
+
+.slider_text {
+    display: flex;
+    flex-direction: column; /* Stack text vertically */
+    align-items: flex-end; /* Align text to the bottom */
+    margin-right: 10px; /* Adjust margin as needed for spacing */
+}
+
+.slider_text p {
+    margin-bottom: 25px; /* Adjust as needed for spacing between text elements */
+    color: white; /* Set the text color */
+    font-size: var(--normal-font-size); /* Set the font size */
+    white-space: nowrap; /* Prevent text from wrapping */
 }
