@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Play a Song</title>
+</head>
+<body>
+    <h1>Play a Song</h1>
+    <input type="text" id="song-search" placeholder="Enter a song name">
+    <button onclick="searchSong()">Search</button>
+    
+    <div id="song-preview"></div>
+
+    <script>
+        async function searchSong() {
+            const songName = document.getElementById('song-search').value;
+            const accessToken = 'BQDkfDgqvNl-Y9KS4f1-AUYTOaXLteW0GYsb5WrJayP_vYCWKi-D7AWSNHds6xVeQ19DYO2dnfboFBSPWE4QNGI8ZaybH6Bi4UIf6Xb4RnVhO8RMXyXjsGI1abQDUaBZPyJky-EXeLxQx6GrYcx13zan5KAzvhltVZVhCU5q8ubQD1j6a-OR4I-QrcB52NyBVNJeWw'; // Replace with your actual access token
+            
+            // Array of search queries
+            const searchQueries = ['%25a%25', 'a%25', '%25e%25', 'e%25', '%25i%25', 'i%25', '%25o%25', 'o%25'];
+            
+            // Randomly select a search query
+            const randomQuery = searchQueries[Math.floor(Math.random() * searchQueries.length)];
+            
+            // Generate a random offset between 1 and 1000
+            const randomOffset = Math.floor(Math.random() * 1000) + 1;
+    
+            // Make a request to Spotify API to search for the song
+            const response = await fetch(`https://api.spotify.com/v1/search?query=${randomQuery}&offset=${randomOffset}&limit=1&type=track&market=NL`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+    
+            const data = await response.json();
+    
+            // Check if there are any tracks in the response
+            if (data.tracks && data.tracks.items.length > 0) {
+                const track = data.tracks.items[0]; // Get the first track
+                const previewUrl = track.preview_url;
+    
+                // Display the song preview
+                const audioPlayer = document.createElement('audio');
+                audioPlayer.controls = true;
+                audioPlayer.src = previewUrl;
+    
+                document.getElementById('song-preview').innerHTML = '';
+                document.getElementById('song-preview').appendChild(audioPlayer);
+            } else {
+                document.getElementById('song-preview').innerHTML = 'No preview available for this song.';
+            }
+        }
+    </script>
+    
+</body>
+</html>
