@@ -4,54 +4,81 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Play a Song</title>
+    <title>Play a Random Song from Playlist</title>
+    <style>
+        /* Add your custom CSS styles here */
+    </style>
 </head>
 <body>
-    <h1>Play a Song</h1>
-    <input type="text" id="song-search" placeholder="Enter a song name">
-    <button onclick="searchSong()">Search</button>
+    <h1>Play a Random Song from Playlist</h1>
     
     <div id="song-preview"></div>
 
     <script>
-        async function searchSong() {
-            const songName = document.getElementById('song-search').value;
-            const accessToken = 'BQDkfDgqvNl-Y9KS4f1-AUYTOaXLteW0GYsb5WrJayP_vYCWKi-D7AWSNHds6xVeQ19DYO2dnfboFBSPWE4QNGI8ZaybH6Bi4UIf6Xb4RnVhO8RMXyXjsGI1abQDUaBZPyJky-EXeLxQx6GrYcx13zan5KAzvhltVZVhCU5q8ubQD1j6a-OR4I-QrcB52NyBVNJeWw'; // Replace with your actual access token
+        async function getAccessToken() {
+            const clientId = 'e53d2a0a504a4488800a5908036104b9';
+            const clientSecret = '1ed609c44ec14bebbe8fcd6e3c26e897';
             
-            // Array of search queries
-            const searchQueries = ['%25a%25', 'a%25', '%25e%25', 'e%25', '%25i%25', 'i%25', '%25o%25', 'o%25'];
+            // Base64 encode the client ID and client secret
+            const credentials = btoa(`${clientId}:${clientSecret}`);
             
-            // Randomly select a search query
-            const randomQuery = searchQueries[Math.floor(Math.random() * searchQueries.length)];
-            
-            // Generate a random offset between 1 and 1000
-            const randomOffset = Math.floor(Math.random() * 1000) + 1;
-    
-            // Make a request to Spotify API to search for the song
-            const response = await fetch(`https://api.spotify.com/v1/search?query=${randomQuery}&offset=${randomOffset}&limit=1&type=track&market=NL`, {
+            // Make a POST request to the Spotify token endpoint
+            const response = await fetch('https://accounts.spotify.com/api/token', {
+                method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Basic ${credentials}`
+                },
+                body: 'grant_type=client_credentials'
             });
-    
+            
             const data = await response.json();
-    
-            // Check if there are any tracks in the response
-            if (data.tracks && data.tracks.items.length > 0) {
-                const track = data.tracks.items[0]; // Get the first track
-                const previewUrl = track.preview_url;
-    
-                // Display the song preview
-                const audioPlayer = document.createElement('audio');
-                audioPlayer.controls = true;
-                audioPlayer.src = previewUrl;
-    
-                document.getElementById('song-preview').innerHTML = '';
-                document.getElementById('song-preview').appendChild(audioPlayer);
-            } else {
-                document.getElementById('song-preview').innerHTML = 'No preview available for this song.';
+            const accessToken = data.access_token;
+            
+            return accessToken;
+        }
+
+        async function playRandomSongFromPlaylist() {
+            const playlistURI = '6hO1mHhLjoI3ukhNB5bOMD'; // Replace with your playlist URI
+            
+            try {
+                // Get the access token
+                const accessToken = await getAccessToken();
+                
+                // Make a request to Spotify API to get the playlist details
+                const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistURI}/tracks?limit=50`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                // Check if there are any tracks in the response
+                if (data.items && data.items.length > 0) {
+                    // Randomly select a track from the playlist
+                    const randomIndex = Math.floor(Math.random() * data.items.length);
+                    const track = data.items[randomIndex].track;
+                    const previewUrl = track.preview_url;
+
+                    // Display the song preview
+                    const audioPlayer = document.createElement('audio');
+                    audioPlayer.controls = true;
+                    audioPlayer.src = previewUrl;
+
+                    document.getElementById('song-preview').innerHTML = '';
+                    document.getElementById('song-preview').appendChild(audioPlayer);
+                } else {
+                    document.getElementById('song-preview').innerHTML = 'No songs available in the playlist.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('song-preview').innerHTML = 'Error fetching the playlist.';
             }
         }
+
+        // Call the function when the page loads
+        window.onload = playRandomSongFromPlaylist;
     </script>
     
 </body>
