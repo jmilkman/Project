@@ -1,147 +1,106 @@
-// Get the hash of the url
-const hash = window.location.hash
-  .substring(1)
-  .split("&")
-  .reduce(function(initial, item) {
-    if (item) {
-      var parts = item.split("=");
-      initial[parts[0]] = decodeURIComponent(parts[1]);
+const playButton = document.getElementById('playButton');
+
+playButton.addEventListener('click', function() {
+    // Add the 'pulse-animation' class
+    this.classList.add('pulse-animation');
+
+    // Get the audio element
+    const audioPlayer = document.querySelector('audio');
+
+    // Play the audio
+    if (audioPlayer) {
+        audioPlayer.play();
     }
-    return initial;
-  }, {});
-window.location.hash = "";
 
-// Set token
-let _token = hash.access_token;
+    // Remove the 'pulse-animation' class after the animation completes
+    setTimeout(() => {
+        this.classList.remove('pulse-animation');
+    }, 850); // Adjust this time to match the duration of your animation (1.3s = 1300ms)
+});
 
-const authEndpoint = "https://accounts.spotify.com/authorize";
 
-// Replace with your app's client ID, redirect URI and desired scopes
-const clientId = "86a19f59308f4529908699eecb6c61b7";
-const redirectUri = "https://spotify-random-song.glitch.me";
-const scopes = [
-  "streaming",
-  "user-modify-playback-state",
-  "user-library-modify"
-];
 
-// If there is no token, redirect to Spotify authorization
-if (!_token) {
-  window.location = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
-    "%20"
-  )}&response_type=token`;
-}
+        async function getAccessToken() {
+            const clientId = 'e53d2a0a504a4488800a5908036104b9';
+            const clientSecret = '1ed609c44ec14bebbe8fcd6e3c26e897';
+            
+            // Base64 encode the client ID and client secret
+            const credentials = btoa(`${clientId}:${clientSecret}`);
+            
+            // Make a POST request to the Spotify token endpoint
+            const response = await fetch('https://accounts.spotify.com/api/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': `Basic ${credentials}`
+                },
+                body: 'grant_type=client_credentials'
+            });
+            
+            const data = await response.json();
+            const accessToken = data.access_token;
+            
+            return accessToken;
+        }
 
-// Set up the Web Playback SDK
+        async function playRandomSongFromPlaylist() {
+          const playlistURI = '6hO1mHhLjoI3ukhNB5bOMD'; // Replace with your playlist URI
+      
+          try {
+              // Get the access token
+              const accessToken = await getAccessToken();
+      
+              // Make a request to Spotify API to get the playlist details
+              const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistURI}/tracks?limit=50`, {
+                  headers: {
+                      'Authorization': `Bearer ${accessToken}`
+                  }
+              });
+      
+              const data = await response.json();
+      
+              // Check if there are any tracks in the response
+              if (data.items && data.items.length > 0) {
+                  // Randomly select a track from the playlist
+                  const randomIndex = Math.floor(Math.random() * data.items.length);
+                  const track = data.items[randomIndex].track;
+                  const previewUrl = track.preview_url;
+      
+                  // Display the song preview
+                  const audioPlayer = document.createElement('audio');
+                  audioPlayer.controls = true;
+                  audioPlayer.src = previewUrl;
+      
+                  // Add play/pause event listener
+                  addPlayPauseEventListener(audioPlayer);
+      
+                  document.getElementById('song-preview').innerHTML = '';
+                  document.getElementById('song-preview').appendChild(audioPlayer);
+              } else {
+                  document.getElementById('song-preview').innerHTML = 'No songs available in the playlist.';
+              }
+          } catch (error) {
+              console.error('Error:', error);
+              document.getElementById('song-preview').innerHTML = 'Error fetching the playlist.';
+          }
+      }
+      
+      function addPlayPauseEventListener(audioPlayer) {
+          let isPlaying = false;
+          let timeinbetween = 1000;
+          audioPlayer.addEventListener('play', function() {
+              if (!isPlaying) {
+                  // Start playing the audio
+                  setTimeout(function() {
+                      audioPlayer.pause();
+                      isPlaying = false;
+                  }, timeinbetween);
+                  timeinbetween += 3000;
+                  isPlaying = true;
+              }
+          });
+      }
 
-let deviceId;
-let ids = [];
 
-window.onSpotifyPlayerAPIReady = () => {
-  const player = new Spotify.Player({
-    name: "Big Spotify Button",
-    getOAuthToken: cb => {
-      cb(_token);
-    }
-  });
-
-  // Error handling
-  player.on("initialization_error", e => console.error(e));
-  player.on("authentication_error", e => console.error(e));
-  player.on("account_error", e => console.error(e));
-  player.on("playback_error", e => console.error(e));
-
-  // Playback status updates
-  player.on("player_state_changed", state => {
-    console.log(state);
-  });
-
-  // Ready
-  player.on("ready", data => {
-    console.log("Ready with Device ID", data.device_id);
-    deviceId = data.device_id;
-  });
-
-  // Connect to the player!
-  player.connect();
-};
-
-// Play a specified track on the Web Playback SDK's device ID
-function play(device_id, track) {
-  $.ajax({
-    url: "https://api.spotify.com/v1/me/player/play?device_id=" + device_id,
-    type: "PUT",
-    data: `{"uris": ["${track}"]}`,
-    beforeSend: function(xhr) {
-      xhr.setRequestHeader("Authorization", "Bearer " + _token);
-    },
-    success: function(data) {
-      console.log(data);
-    }
-  });
-}
-
-function makeid(length) {
-  var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
-function getASong() {
-  let random_seed = makeid(2);
-  let random_offset = Math.floor(Math.random() * 2000); // returns a random integer from 0 to 9
-  $.ajax({
-    url:
-      "https://api.spotify.com/v1/search?type=track&offset=" +
-      random_offset +
-      "&limit=1&q=" +
-      random_seed,
-    type: "GET",
-    beforeSend: function(xhr) {
-      xhr.setRequestHeader("Authorization", "Bearer " + _token);
-    },
-    success: function(data) {
-      console.log(data);
-      let trackUri = data.tracks.items[0].uri;
-
-      play(deviceId, trackUri);
-      $("#current-track-name-save").attr("data-song", data.tracks.items[0].uri);
-      $("#current-track-name-save").attr(
-        "src",
-        "https://cdn.glitch.com/eed3cfeb-d097-4769-9d03-2d3a6cc7c004%2Ficons8-heart-24.png?v=1597232027543"
-      );
-      $("#embed-uri").attr(
-        "src",
-        "https://open.spotify.com/embed/track/" + data.tracks.items[0].id
-      );
-      $("#current-track-name-save").css("display", "block");
-    }
-  });
-}
-
-function saveTrack(tid) {
-  var track = $("#" + tid)
-    .attr("data-song")
-    .split(":")
-    .pop();
-
-  $.ajax({
-    url: "https://api.spotify.com/v1/me/tracks?ids=" + track,
-    type: "PUT",
-    beforeSend: function(xhr) {
-      xhr.setRequestHeader("Authorization", "Bearer " + _token);
-    },
-    success: function(data) {
-      console.log(data);
-      $("#" + tid).attr(
-        "src",
-        "https://cdn.glitch.com/eed3cfeb-d097-4769-9d03-2d3a6cc7c004%2Ficons8-heart-24(1).png?v=1597232463038"
-      );
-    }
-  });
-}
+        // Call the function when the page loads
+        window.onload = playRandomSongFromPlaylist;
