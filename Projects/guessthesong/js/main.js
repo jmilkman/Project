@@ -44,46 +44,52 @@ playButton.addEventListener('click', function() {
         }
 
         async function playRandomSongFromPlaylist() {
-          const playlistURI = '6hO1mHhLjoI3ukhNB5bOMD'; // Replace with your playlist URI
-      
-          try {
-              // Get the access token
-              const accessToken = await getAccessToken();
-      
-              // Make a request to Spotify API to get the playlist details
-              const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistURI}/tracks?limit=50`, {
-                  headers: {
-                      'Authorization': `Bearer ${accessToken}`
-                  }
-              });
-      
-              const data = await response.json();
-      
-              // Check if there are any tracks in the response
-              if (data.items && data.items.length > 0) {
-                  // Randomly select a track from the playlist
-                  const randomIndex = Math.floor(Math.random() * data.items.length);
-                  const track = data.items[randomIndex].track;
-                  const previewUrl = track.preview_url;
-      
-                  // Display the song preview
-                  const audioPlayer = document.createElement('audio');
-                  audioPlayer.controls = true;
-                  audioPlayer.src = previewUrl;
-      
-                  // Add play/pause event listener
-                  addPlayPauseEventListener(audioPlayer);
-      
-                  document.getElementById('song-preview').innerHTML = '';
-                  document.getElementById('song-preview').appendChild(audioPlayer);
-              } else {
-                  document.getElementById('song-preview').innerHTML = 'No songs available in the playlist.';
-              }
-          } catch (error) {
-              console.error('Error:', error);
-              document.getElementById('song-preview').innerHTML = 'Error fetching the playlist.';
-          }
-      }
+            const playlistURI = '6hO1mHhLjoI3ukhNB5bOMD'; // Replace with your playlist URI
+        
+            try {
+                // Get the access token
+                const accessToken = await getAccessToken();
+        
+                // Make a request to Spotify API to get the playlist details
+                const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistURI}/tracks?limit=50`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+        
+                const data = await response.json();
+                console.log(data);
+        
+                // Filter out tracks with null preview_url
+                const tracksWithPreview = data.items.filter(item => item.track.preview_url !== null);
+        
+                // Check if there are any tracks with preview_url in the response
+                if (tracksWithPreview.length > 0) {
+                    // Randomly select a track from the filtered playlist
+                    const randomIndex = Math.floor(Math.random() * tracksWithPreview.length);
+                    const track = tracksWithPreview[randomIndex].track;
+                    const previewUrl = track.preview_url;
+        
+                    // Display the song preview
+                    const audioPlayer = document.createElement('audio');
+                    //audioPlayer.controls = true;
+                    audioPlayer.src = previewUrl;
+                    console.log(previewUrl);
+        
+                    // Add play/pause event listener
+                    addPlayPauseEventListener(audioPlayer);
+        
+                    document.getElementById('song-preview').innerHTML = '';
+                    document.getElementById('song-preview').appendChild(audioPlayer);
+                } else {
+                    document.getElementById('song-preview').innerHTML = 'No songs available in the playlist with preview URLs.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('song-preview').innerHTML = 'Error fetching the playlist.';
+            }
+        }
+        
       
       function addPlayPauseEventListener(audioPlayer) {
           let isPlaying = false;

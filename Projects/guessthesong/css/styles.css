@@ -24,6 +24,11 @@
     box-sizing: border-box;
 }
 
+h1 {
+    font-size: 75px;
+    color: white;
+}
+
 body {
     background-color: #000835;
     height: 100vh;
