@@ -1,5 +1,8 @@
 const playButton = document.getElementById('playButton');
+const skipButton = document.getElementById('skipButton');
+const submitButton = document.getElementById('submitButton');
 
+// Play button
 playButton.addEventListener('click', function() {
     // Add the 'pulse-animation' class
     this.classList.add('pulse-animation');
@@ -15,6 +18,28 @@ playButton.addEventListener('click', function() {
     // Remove the 'pulse-animation' class after the animation completes
     setTimeout(() => {
         this.classList.remove('pulse-animation');
+    }, 850); // Adjust this time to match the duration of your animation (1.3s = 1300ms)
+});
+
+// Skip button
+skipButton.addEventListener('click', function() {
+    // Add the 'pulse-animation' class
+    this.classList.add('pulse-animation_skip');
+    
+    // Remove the 'pulse-animation' class after the animation completes
+    setTimeout(() => {
+        this.classList.remove('pulse-animation_skip');
+    }, 850); // Adjust this time to match the duration of your animation (1.3s = 1300ms)
+});
+
+// Submit button
+submitButton.addEventListener('click', function() {
+    // Add the 'pulse-animation' class
+    this.classList.add('pulse-animation_submit');
+    
+    // Remove the 'pulse-animation' class after the animation completes
+    setTimeout(() => {
+        this.classList.remove('pulse-animation_submit');
     }, 850); // Adjust this time to match the duration of your animation (1.3s = 1300ms)
 });
 

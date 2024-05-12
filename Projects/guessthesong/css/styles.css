@@ -27,6 +27,7 @@
 h1 {
     font-size: 75px;
     color: white;
+    text-align: center;
 }
 
 body {
@@ -35,10 +36,70 @@ body {
     display: grid;
     place-items: center;
 }
+.login__img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.skipBtn {
+    margin-right: 500px; /* Adjust this value as needed */
+}
+
+/* Skip btn */
+
+.skipBtn {
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 21px;
+    background: white;
+    border: 2px solid black;
+    width: 200px;
+    height: 50px;
+    position: relative;
+    right: 250px;
+    top: 60px;
+}
+.skipBtn::before {
+    content: "";
+    display: inline-block;
+}
+.skipBtn:hover {
+    background: #FF1879;
+}
+.pulse-animation_skip {
+    animation: pulse2 0.85s ease;
+}
+@keyframes pulse2 {
+    0% {
+        box-shadow: 0em 0em 0em 0em #FF1879;
+    }
+    100% {
+        box-shadow: 0em 0em 0em 1.50em hsla(250,100%,75%,0);
+    }
+}
+
+/* Main background */
+.maincontainer {
+    width: 1500px;
+    height: 750px;
+
+    background-color: hsla(0, 0%, 10%, 0.1);
+    border: 2px solid var(--white-color);
+    border-radius: 1rem;
+    backdrop-filter: blur(8px);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
 
 /* Play Button */
 
-.cus_plyBtn {
+.playBtn {
     font-size: 100px;
     color: black;
     display: grid;
@@ -52,7 +113,7 @@ body {
     transition: 0.3s;
 }
 
-.cus_plyBtn::before {
+.playBtn::before {
     content: "";
     display: inline-block;
     border-left: 0.3em solid;
@@ -60,7 +121,7 @@ body {
     border-bottom: 0.18em solid transparent;
     margin-right: -0.08em;
 }
-.cus_plyBtn:hover {
+.playBtn:hover {
     background: #FF1879;
 }
 .pulse-animation {
@@ -74,4 +135,63 @@ body {
     100% {
         box-shadow: 0em 0em 0em 0.3em hsla(250,100%,75%,0);
     }
+}
+
+/* Submit Button */
+
+.submitBtn {
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 21px;
+    background: white;
+    border: 2px solid black;
+    width: 200px;
+    height: 50px;
+    position: relative;
+    left: 250px;
+    top: 60px;
+}
+.submitBtn::before {
+    content: "";
+    display: inline-block;
+}
+.submitBtn:hover {
+    background: #04AA6D;
+}
+.pulse-animation_submit {
+    animation: pulse3 0.85s ease;
+}
+@keyframes pulse3 {
+    0% {
+        box-shadow: 0em 0em 0em 0em #04AA6D;
+    }
+    100% {
+        box-shadow: 0em 0em 0em 1.50em hsla(250,100%,75%,0);
+    }
+}
+
+/* guess */
+
+.input-container {
+    position: relative;
+    display: inline-block; /* Ensure that the icon and input are displayed inline */
+}
+
+#guess {
+    width: 1404px;
+    font-size: 21px;
+    margin-top: 350px;
+    border-radius: 5px;
+    border: 2px solid black;
+    padding: 10px 50px;
+    margin-right: 20px;
+}
+
+.fa-search {
+    position: relative; /* Position the icon absolutely */
+    left: 40px; /* Adjust the distance from the left */
+    top: 7px; /* Adjust the distance from the left */
+    transform: translateY(-50%); /* Center it vertically */
+    font-size: 16px;
+    color: black;
 }

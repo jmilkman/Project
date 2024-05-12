@@ -5,15 +5,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/styles.css" />
-    <title>Play a Random Song from Playlist</title>
+    <title>Play a Random Song from my Playlist</title>
 </head>
 <body>
-    <h1>Play a Random Song from Playlist</h1>
+    <img src="img/login-bg.jpg" alt="login image" class="login__img">
     
-    <div id="song-preview"></div>
+    <div class="maincontainer">
+        <h1>Play a Random Song from my Playlist</h1>
+        <div id="song-preview"></div>
 
-    <button class="cus_plyBtn" id="playButton"></button>
+        <button class="playBtn" id="playButton"></button>
 
-<script src="js/main.js"></script>
+        <div class="input-container">
+            <i class="fas fa-search"></i> <!-- Magnifying glass icon -->
+            <input type="text" id="guess" placeholder="Search for the artist / title...">
+        </div>
+        
+        <div class="button-container">
+            <button class="skipBtn" id="skipButton">SKIP</button>
+            <button class="submitBtn" id="submitButton">SUBMIT</button>
+        </div>
+    </div>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="js/main.js"></script>
 </body>
 </html>
