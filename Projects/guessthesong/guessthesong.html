@@ -5,19 +5,31 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/styles.css" />
-    <title>Play a Random Song from my Playlist</title>
+    <title>Guess The Song</title>
 </head>
 <body>
     <img src="img/login-bg.jpg" alt="login image" class="login__img">
+    <header class="header">
+        <a href="#" class="logo">Portfolio</a>
+
+        <nav class="navbar">
+            <a href="../../index.html">Home</a>
+            <a href="../../About.html">About</a>
+            <a href="../../Projects.html">Projects</a>
+            <a href="../../Login.html">Login</a>
+        </nav>
+    </header>
     
     <div class="maincontainer">
         <h1>Play a Random Song from my Playlist</h1>
         <div id="song-preview"></div>
 
-        <button class="playBtn" id="playButton"></button>
+        <div class="playBtnContainer">
+            <button class="playBtn" id="playButton"></button>
+        </div>
 
         <div class="input-container">
-            <i class="fas fa-search"></i> <!-- Magnifying glass icon -->
+            <i class="fas fa-search"></i>
             <input type="text" id="guess" placeholder="Search for the artist / title...">
         </div>
         
