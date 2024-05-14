@@ -25,18 +25,20 @@
 }
 
 h1 {
-    font-size: 75px;
+    font-size: 40px;
     color: white;
     text-align: center;
+    padding: 10px;
 }
 
 body {
     background-color: #000835;
-    height: 100vh;
+    height: 100%;
     display: grid;
     place-items: center;
     color: #ededed;
-    padding-top: 60px;
+    padding-top: 90px;
+   overflow-y: hidden;
 }
 
 .header {
@@ -106,7 +108,7 @@ body {
     height: 50px;
     position: relative;
     right: 250px;
-    top: 60px;
+    top: 40px;
 }
 .skipBtn::before {
     content: "";
@@ -147,7 +149,7 @@ body {
 /* Play Button Container */
 .playBtnContainer {
     position: relative;
-    margin-top: 430px; /* Adjust this value as needed */
+    margin-top: 120px; /* Adjust this value as needed */
 }
 
 /* Play Button */
@@ -206,7 +208,7 @@ body {
     height: 50px;
     position: relative;
     left: 250px;
-    top: 60px;
+    top: 40px;
 }
 .submitBtn::before {
     content: "";
@@ -251,4 +253,85 @@ body {
     transform: translateY(-50%); /* Center it vertically */
     font-size: 16px;
     color: black;
+}
+
+.fa-question-circle {
+    position: relative; /* Position the icon absolutely */
+    font-size: 25px;
+    border: 2px solid black;
+    border-radius: 50%;
+    left: 300px;
+}
+
+.fa-question-circle:hover {
+    color: #FF1879;
+}
+
+.headerContainer {
+    display: flex;
+    align-items: center;
+}
+
+.guessbox1,
+.guessbox2,
+.guessbox3,
+.guessbox4,
+.guessbox5 {
+    background-color: #f0f0f0;
+    padding: 10px 50px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 2px solid black;
+    font-size: 21px;
+    width: 1404px;
+    height: 55px;
+    color: black;
+}
+
+.timer {
+    font-size: 30px;
+    position: absolute;
+    right: 640px;
+    bottom: 25px;
+}
+
+.timeleft {
+    font-size: 30px;
+    position: absolute;
+    left: 640px;
+    bottom: 25px;
+}
+
+.help {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    background-color: white; /* Add white background */
+    border: 2px solid black; /* Add black border */
+    padding: 20px; /* Add padding for better appearance */
+    width: 400px;
+    height: 352px;
+    color: black;
+    transform: translate(137%, 23%); /* Center horizontally and vertically */
+    text-align: center;
+    border-radius: 5px;
+}
+
+.help.open {
+    opacity: 1;
+    z-index: 999;
+}
+
+.correct {
+    color: green;
+    font-weight: bold;
+}
+.incorrect {
+    color: red;
 }

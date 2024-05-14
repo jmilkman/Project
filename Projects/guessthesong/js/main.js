@@ -2,6 +2,20 @@ const playButton = document.getElementById('playButton');
 const skipButton = document.getElementById('skipButton');
 const submitButton = document.getElementById('submitButton');
 
+const openBtn = document.getElementById("openHelp");
+const closeBtn = document.getElementById("closeHelp");
+const help = document.getElementById("help");
+
+const Answer = [];
+
+openBtn.addEventListener("click", () => {
+    help.style.visibility = "visible";
+});
+
+closeBtn.addEventListener("click", () => {
+    help.style.visibility = "hidden";
+});
+
 // Play button
 playButton.addEventListener('click', function() {
     this.classList.add('pulse-animation');
@@ -69,21 +83,45 @@ submitButton.addEventListener('click', function() {
                 });
         
                 const data = await response.json();
-                console.log(data);
+                //console.log(data);
+                const songList = [];
         
-                // Filter out tracks with null preview_url
                 const tracksWithPreview = data.items.filter(item => item.track.preview_url !== null);
+
         
                 if (tracksWithPreview.length > 0) {
+                    tracksWithPreview.forEach(item => {
+                        const randomIndex = Math.floor(Math.random() * tracksWithPreview.length);
+                        const track = tracksWithPreview[randomIndex].track;
+                        const previewUrl = track.preview_url;
+                        const trackName = track.name;
+                        const artistNames = track.artists.map(artist => artist.name).join(', ');
+                        
+                        // Check if the song exists in the array.
+                        const isDuplicate = songList.some(song => song.name === trackName && song.artistNames === artistNames);
+                        
+                        // Only add the trackname and artistsNames if its not a dup.
+                        if (!isDuplicate) {
+                            songList.push({ name: trackName, artistNames: artistNames });
+                        }
+                    });
+
                     const randomIndex = Math.floor(Math.random() * tracksWithPreview.length);
                     const track = tracksWithPreview[randomIndex].track;
                     const previewUrl = track.preview_url;
+                    const trackName = track.name;
+                    const artistNames = track.artists.map(artist => artist.name).join(', ');
         
                     const audioPlayer = document.createElement('audio');
-                    //audioPlayer.controls = true;
                     audioPlayer.src = previewUrl;
-                    console.log(previewUrl);
         
+                    Answer.push({ name: trackName, artistNames: artistNames });
+        
+                    //console.log("What the previewURL is: ", previewUrl);
+                    //console.log("List of songs: ", songList);
+                    //console.log("Answer: ", Answer);
+                    
+                    listSongsOptions(songList);
                     addPlayPauseEventListener(audioPlayer);
         
                     document.getElementById('song-preview').innerHTML = '';
@@ -94,21 +132,79 @@ submitButton.addEventListener('click', function() {
             } catch (error) {
                 console.error('Error:', error);
             }
+            return Answer;
         }
+        
       
-      function addPlayPauseEventListener(audioPlayer) {
-          let isPlaying = false;
-          let timeinbetween = 1000;
-          audioPlayer.addEventListener('play', function() {
-              if (!isPlaying) {
-                  setTimeout(function() {
-                      audioPlayer.pause();
-                      isPlaying = false;
-                  }, timeinbetween);
-                  timeinbetween += 3000;
-                  isPlaying = true;
-              }
-          });
-      }
+    function addPlayPauseEventListener(audioPlayer) {
+        let isPlaying = false;
+        let timeinbetween = 1000;
+        audioPlayer.addEventListener('play', function() {
+        console.time("test_timer");
+        if (!isPlaying) {
+            setTimeout(function() {
+            audioPlayer.pause();
+            isPlaying = false;
+            console.timeEnd("test_timer");
+            }, timeinbetween);
+            timeinbetween += 3000;
+            isPlaying = true;
+            }
+        });
+    }
 
+    function listSongsOptions(songList) {
+        // Get the datalist element
+        const songListDatalist = document.getElementById('songList');
+
+        // Clear previous options
+        songListDatalist.innerHTML = '';
+
+        // Populate options from songList array
+        songList.forEach(song => {
+            const option = document.createElement('option');
+            option.value = `${song.name} - ${song.artistNames}`;
+            songListDatalist.appendChild(option);
+        });
+    }
+
+    let currentGuessBox = 1;
+
+    function skip() {
+        const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
+        
+        guessBox.textContent = "Skipped";
+        guessBox.classList.add('incorrect'); // Add the 'incorrect' class
+
+        currentGuessBox++;
+
+        if (currentGuessBox > 5) {
+            currentGuessBox = 1;
+        }
+    }
+
+    function submit(guess) {
+        const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
+        
+        // Retrieve the correct answer from the Answer array
+        const correctAnswer = Answer[0]; // Assuming the correct answer is the first element of the Answer array
+
+        // Compare the user's guess with the correct answer
+        if (guess === `${correctAnswer.name} - ${correctAnswer.artistNames}`) {
+            guessBox.textContent = guess;
+            guessBox.classList.add('correct'); // Add the 'correct' class
+        } else {
+            guessBox.textContent = guess;
+            guessBox.classList.remove('correct'); // Remove the 'correct' class if it was previously added
+            guessBox.classList.add('incorrect'); // Add the 'incorrect' class
+        }
+    
+        currentGuessBox++;
+    
+        if (currentGuessBox > 5) {
+            currentGuessBox = 1;
+        }
+        document.getElementById('guess').value = "";
+    }
+    
     window.onload = playRandomSongFromPlaylist;
