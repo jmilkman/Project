@@ -119,7 +119,7 @@ submitButton.addEventListener('click', function() {
         
                     //console.log("What the previewURL is: ", previewUrl);
                     //console.log("List of songs: ", songList);
-                    //console.log("Answer: ", Answer);
+                    console.log("Answer: ", Answer);
                     
                     listSongsOptions(songList);
                     addPlayPauseEventListener(audioPlayer);
@@ -172,12 +172,18 @@ submitButton.addEventListener('click', function() {
 
     function skip() {
         const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
-        
+            
         guessBox.textContent = "Skipped";
         guessBox.classList.add('incorrect'); // Add the 'incorrect' class
-
+    
+        const iconSpan = document.createElement('span');
+        iconSpan.classList.add('fa', 'fa-x'); // Add Font Awesome classes
+        
+        // Append the icon before the text content
+        guessBox.insertBefore(iconSpan, guessBox.firstChild);
+    
         currentGuessBox++;
-
+    
         if (currentGuessBox > 5) {
             currentGuessBox = 1;
         }
@@ -193,10 +199,23 @@ submitButton.addEventListener('click', function() {
         if (guess === `${correctAnswer.name} - ${correctAnswer.artistNames}`) {
             guessBox.textContent = guess;
             guessBox.classList.add('correct'); // Add the 'correct' class
+
+            const iconSpan = document.createElement('span');
+            iconSpan.classList.add('fa', 'fa-check'); // Add Font Awesome classes
+            
+            // Append the icon before the text content
+            guessBox.insertBefore(iconSpan, guessBox.firstChild);
+
         } else {
             guessBox.textContent = guess;
             guessBox.classList.remove('correct'); // Remove the 'correct' class if it was previously added
             guessBox.classList.add('incorrect'); // Add the 'incorrect' class
+
+            const iconSpan = document.createElement('span');
+            iconSpan.classList.add('fa', 'fa-x'); // Add Font Awesome classes
+            
+            // Append the icon before the text content
+            guessBox.insertBefore(iconSpan, guessBox.firstChild);
         }
     
         currentGuessBox++;

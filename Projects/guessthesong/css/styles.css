@@ -278,7 +278,7 @@ body {
 .guessbox4,
 .guessbox5 {
     background-color: #f0f0f0;
-    padding: 10px 50px;
+    padding: 10px 30px;
     margin-bottom: 20px;
     border-radius: 5px;
     border: 2px solid black;
@@ -334,4 +334,14 @@ body {
 }
 .incorrect {
     color: red;
+}
+.fa-x {
+    color: red;
+    margin-right: 20px;
+}
+
+.fa-check {
+    color: green;
+    margin-right: 20px;
+    font-weight: bold;
 }
