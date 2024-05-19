@@ -2,12 +2,6 @@
 
 //                             TO DO
 // ------------------------------------------------------------
-// Need to add Timer counting up for when the music is playing.
-// Need to have the play button just play the music.
-// Skip button needs to increment the time.
-// 5 wrong answers, display fail message and ask to play again.
-// Fix bug with the correct song not always displaying.
-
 
 const playButton = document.getElementById('playButton');
 const skipButton = document.getElementById('skipButton');
@@ -15,21 +9,13 @@ const submitButton = document.getElementById('submitButton');
 const openBtn = document.getElementById("openHelp");
 const closeBtn = document.getElementById("closeHelp");
 const help = document.getElementById("help");
+const timerDisplay = document.getElementById('timer');
+const confe = document.querySelector('#my-canvas');
 
 const popup = document.querySelector('.winningScreen');
-let confe = document.querySelector('#my-canvas');
+const losingpopup = document.querySelector('.losingScreen');
 const close = document.querySelector('.playAgain');
-
-var confettiSettings = { target: 'my-canvas' };
-var confetti = new ConfettiGenerator(confettiSettings);
-confetti.render();
-
-
-close.onclick = function() {
-    window.location.reload()
-    popup.classList.remove('open', 'active');
-}
-
+let timerInterval;
 
 const Answer = [];
 
@@ -41,7 +27,47 @@ closeBtn.addEventListener("click", () => {
     help.style.visibility = "hidden";
 });
 
+const closeButtons = document.querySelectorAll('.playAgain');
 
+closeButtons.forEach(button => {
+    button.onclick = function() {
+        window.location.reload();
+        popup.classList.remove('open', 'active');
+        losingpopup.classList.remove('open', 'active');
+    };
+});
+
+// Function to start or update the timer
+function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+        let elapsedTime = Date.now() - startTime;
+        let seconds = Math.floor(elapsedTime / 1000);
+        let minutes = Math.floor(seconds / 60);
+        seconds = seconds % 60;
+        let formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        timerDisplay.textContent = formattedTime;
+    }, 1000); // Update timer every second
+}
+
+// Function to stop the timer and leave it at the current time
+function stopTimer() {
+    clearInterval(timerInterval);
+
+    // Calculate the current time
+    let elapsedTime = Date.now() - startTime;
+    let seconds = Math.floor(elapsedTime / 1000);
+    let minutes = Math.floor(seconds / 60);
+    seconds = seconds % 60;
+    let formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    timerDisplay.textContent = formattedTime;
+}
+
+// Function to stop the timer and reset it
+function resetTimer() {
+    clearInterval(timerInterval);
+    timerDisplay.textContent = '0:00';
+}
 
 // Play button
 playButton.addEventListener('click', function() {
@@ -51,6 +77,7 @@ playButton.addEventListener('click', function() {
 
     if (audioPlayer) {
         audioPlayer.play();
+        resetTimer(); // Reset the timer when play button is pressed
     }
 
     setTimeout(() => {
@@ -59,201 +86,208 @@ playButton.addEventListener('click', function() {
 });
 
 // Skip button
+let timeBetween = 1000; // Initial time between plays (1 second)
+const skipIncrements = [1000, 3000, 3000, 6000]; // Skip time increments in milliseconds
+let currentIndex = 0; // Index to keep track of the current increment
+
 skipButton.addEventListener('click', function() {
     this.classList.add('pulse-animation_skip');
-    
+
     setTimeout(() => {
         this.classList.remove('pulse-animation_skip');
     }, 850);
+
+    timeBetween += skipIncrements[currentIndex];
+    this.textContent = `Skip (+${timeBetween / 1000}s)`;
+    currentIndex = (currentIndex + 1) % skipIncrements.length;
+
 });
 
 // Submit button
 submitButton.addEventListener('click', function() {
     this.classList.add('pulse-animation_submit');
-    
+
     setTimeout(() => {
         this.classList.remove('pulse-animation_submit');
     }, 850);
 });
 
-        async function getAccessToken() {
-            const clientId = 'e53d2a0a504a4488800a5908036104b9';
-            const clientSecret = '1ed609c44ec14bebbe8fcd6e3c26e897';
-            
-            const credentials = btoa(`${clientId}:${clientSecret}`);
-            
-            const response = await fetch('https://accounts.spotify.com/api/token', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Basic ${credentials}`
-                },
-                body: 'grant_type=client_credentials'
-            });
-            
-            const data = await response.json();
-            const accessToken = data.access_token;
-            
-            return accessToken;
-        }
+async function getAccessToken() {
+    const clientId = 'e53d2a0a504a4488800a5908036104b9';
+    const clientSecret = '1ed609c44ec14bebbe8fcd6e3c26e897';
 
-        async function playRandomSongFromPlaylist() {
-            const playlistURI = '6hO1mHhLjoI3ukhNB5bOMD';
-        
-            try {
-                const accessToken = await getAccessToken();
-        
-                const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistURI}/tracks?limit=50`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-        
-                const data = await response.json();
-                //console.log(data);
-                const songList = [];
-        
-                const tracksWithPreview = data.items.filter(item => item.track.preview_url !== null);
+    const credentials = btoa(`${clientId}:${clientSecret}`);
 
-        
-                if (tracksWithPreview.length > 0) {
-                    tracksWithPreview.forEach(item => {
-                        const randomIndex = Math.floor(Math.random() * tracksWithPreview.length);
-                        const track = tracksWithPreview[randomIndex].track;
-                        const previewUrl = track.preview_url;
-                        const trackName = track.name;
-                        const artistNames = track.artists.map(artist => artist.name).join(', ');
-                        
-                        // Check if the song exists in the array.
-                        const isDuplicate = songList.some(song => song.name === trackName && song.artistNames === artistNames);
-                        
-                        // Only add the trackname and artistsNames if its not a dup.
-                        if (!isDuplicate) {
-                            songList.push({ name: trackName, artistNames: artistNames });
-                        }
-                    });
+    const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': `Basic ${credentials}`
+        },
+        body: 'grant_type=client_credentials'
+    });
 
-                    const randomIndex = Math.floor(Math.random() * tracksWithPreview.length);
-                    const track = tracksWithPreview[randomIndex].track;
-                    const previewUrl = track.preview_url;
-                    const trackName = track.name;
-                    const artistNames = track.artists.map(artist => artist.name).join(', ');
-        
-                    const audioPlayer = document.createElement('audio');
-                    audioPlayer.src = previewUrl;
-        
-                    Answer.push({ name: trackName, artistNames: artistNames });
-        
-                    //console.log("What the previewURL is: ", previewUrl);
-                    //console.log("List of songs: ", songList);
-                    console.log("Answer: ", Answer);
-                    
-                    listSongsOptions(songList);
-                    addPlayPauseEventListener(audioPlayer);
-        
-                    document.getElementById('song-preview').innerHTML = '';
-                    document.getElementById('song-preview').appendChild(audioPlayer);
-                } else {
-                    document.getElementById('song-preview').innerHTML = 'No songs available in the playlist with preview URLs.';
-                }
-            } catch (error) {
-                console.error('Error:', error);
+    const data = await response.json();
+    const accessToken = data.access_token;
+
+    return accessToken;
+}
+
+async function playRandomSongFromPlaylist() {
+    const playlistURI = '6j4w1woXd7xzGCNQoKrpY9';
+
+    try {
+        const accessToken = await getAccessToken();
+
+        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistURI}/tracks?limit=100`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
             }
-            return Answer;
+        });
+
+        const data = await response.json();
+        const songList = [];
+
+        const tracksWithPreview = data.items.filter(item => item.track.preview_url !== null);
+
+        if (tracksWithPreview.length > 0) {
+            // Create a set to store unique track names and artist names
+            const uniqueTracks = new Set();
+
+            // Filter unique tracks
+            tracksWithPreview.forEach(item => {
+                const track = item.track;
+                const trackName = track.name;
+                const artistNames = track.artists.map(artist => artist.name).join(', ');
+
+                // Combine track name and artist names to create a unique identifier
+                const uniqueIdentifier = `${trackName} - ${artistNames}`;
+
+                // Check if the identifier is already in the set
+                if (!uniqueTracks.has(uniqueIdentifier)) {
+                    uniqueTracks.add(uniqueIdentifier);
+                    songList.push({ name: trackName, artistNames: artistNames });
+                }
+            });
+
+            // Now you have a list of unique tracks, select a random track
+            if (songList.length > 0) {
+                const randomIndex = Math.floor(Math.random() * songList.length);
+                const track = songList[randomIndex];
+                const previewUrl = tracksWithPreview.find(item => item.track.name === track.name && item.track.artists.map(artist => artist.name).join(', ') === track.artistNames).track.preview_url;
+
+                const audioPlayer = document.createElement('audio');
+                audioPlayer.src = previewUrl;
+
+                Answer.push({ name: track.name, artistNames: track.artistNames });
+
+                listSongsOptions(songList);
+                addPlayPauseEventListener(audioPlayer);
+
+                document.getElementById('song-preview').innerHTML = '';
+                document.getElementById('song-preview').appendChild(audioPlayer);
+            } else {
+                document.getElementById('song-preview').innerHTML = 'No unique songs available in the playlist with preview URLs.';
+            }
+        } else {
+            document.getElementById('song-preview').innerHTML = 'No songs available in the playlist with preview URLs.';
         }
-        
-      
-    function addPlayPauseEventListener(audioPlayer) {
-        let isPlaying = false;
-        let timeinbetween = 1_000;
-        audioPlayer.addEventListener('play', function() {
-        console.time("test_timer");
+    } catch (error) {
+        console.error('Error:', error);
+    }
+    return Answer;
+}
+
+function addPlayPauseEventListener(audioPlayer) {
+    let isPlaying = false;
+    audioPlayer.addEventListener('play', function() {
+        startTimer();
         if (!isPlaying) {
             setTimeout(function() {
-            audioPlayer.pause();
-            isPlaying = false;
-            console.timeEnd("test_timer");
-            }, timeinbetween);
-            timeinbetween += 3_000;
+                audioPlayer.pause();
+                isPlaying = false;
+                stopTimer();
+            }, timeBetween);
             isPlaying = true;
-            }
-        });
+        }
+    });
+}
+
+function listSongsOptions(songList) {
+    // Get the datalist element
+    const songListDatalist = document.getElementById('songList');
+
+    // Clear previous options
+    songListDatalist.innerHTML = '';
+
+    // Populate options from songList array
+    songList.forEach(song => {
+        const option = document.createElement('option');
+        option.value = `${song.name} - ${song.artistNames}`;
+        songListDatalist.appendChild(option);
+    });
+}
+
+function skip() {
+    const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
+        
+    guessBox.textContent = "Skipped";
+    guessBox.classList.add('incorrect'); // Add the 'incorrect' class
+
+    const iconSpan = document.createElement('span');
+    iconSpan.classList.add('fa', 'fa-x'); // Add Font Awesome classes
+    
+    // Append the icon before the text content
+    guessBox.insertBefore(iconSpan, guessBox.firstChild);
+
+    if (currentGuessBox == 5) {
+        losingpopup.classList.add('open');
+    } else {
+        console.log(currentGuessBox);
+        currentGuessBox++;
     }
+}
 
-    function listSongsOptions(songList) {
-        // Get the datalist element
-        const songListDatalist = document.getElementById('songList');
+let currentGuessBox = 1;
 
-        // Clear previous options
-        songListDatalist.innerHTML = '';
+function submit(guess) {
+    const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
+    let correctGuess = false;
+    
+    const correctAnswer = Answer[0];
 
-        // Populate options from songList array
-        songList.forEach(song => {
-            const option = document.createElement('option');
-            option.value = `${song.name} - ${song.artistNames}`;
-            songListDatalist.appendChild(option);
-        });
-    }
-
-    let currentGuessBox = 1;
-
-    function skip() {
-        const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
-            
-        guessBox.textContent = "Skipped";
-        guessBox.classList.add('incorrect'); // Add the 'incorrect' class
+    if (guess === `${correctAnswer.name} - ${correctAnswer.artistNames}`) {
+        guessBox.textContent = guess;
+        guessBox.classList.add('correct');
     
         const iconSpan = document.createElement('span');
-        iconSpan.classList.add('fa', 'fa-x'); // Add Font Awesome classes
-        
-        // Append the icon before the text content
+        iconSpan.classList.add('fa', 'fa-check');
+    
         guessBox.insertBefore(iconSpan, guessBox.firstChild);
+
+        correctGuess = true;
     
-        currentGuessBox++;
-    
-        if (currentGuessBox > 5) {
-            currentGuessBox = 1;
-        }
+        popup.classList.add('open');
+        confe.classList.add('active');
+
+    } else {
+        guessBox.textContent = guess;
+        guessBox.classList.remove('correct');
+        guessBox.classList.add('incorrect');
+
+        const iconSpan = document.createElement('span');
+        iconSpan.classList.add('fa', 'fa-x');
+        
+        guessBox.insertBefore(iconSpan, guessBox.firstChild);
     }
 
-    function submit(guess) {
-        const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
-        
-        // Retrieve the correct answer from the Answer array
-        const correctAnswer = Answer[0]; // Assuming the correct answer is the first element of the Answer array
-    
-        // Compare the user's guess with the correct answer
-        if (guess === `${correctAnswer.name} - ${correctAnswer.artistNames}`) {
-            guessBox.textContent = guess;
-            guessBox.classList.add('correct'); // Add the 'correct' class
-        
-            const iconSpan = document.createElement('span');
-            iconSpan.classList.add('fa', 'fa-check'); // Add Font Awesome classes
-        
-            // Append the icon before the text content
-            guessBox.insertBefore(iconSpan, guessBox.firstChild);
-        
-            popup.classList.add('open');
-            confe.classList.add('active');
-
-        } else {
-            guessBox.textContent = guess;
-            guessBox.classList.remove('correct'); // Remove the 'correct' class if it was previously added
-            guessBox.classList.add('incorrect'); // Add the 'incorrect' class
-    
-            const iconSpan = document.createElement('span');
-            iconSpan.classList.add('fa', 'fa-x'); // Add Font Awesome classes
-            
-            // Append the icon before the text content
-            guessBox.insertBefore(iconSpan, guessBox.firstChild);
-        }
-    
+    if (currentGuessBox == 5 && correctGuess == false) {
+        losingpopup.classList.add('open');
+    } else {
+        console.log(currentGuessBox);
         currentGuessBox++;
-    
-        if (currentGuessBox > 5) {
-            currentGuessBox = 1;
-        }
-        document.getElementById('guess').value = "";
     }
-    
-    window.onload = playRandomSongFromPlaylist;
+    document.getElementById('guess').value = "";
+}
+
+window.onload = playRandomSongFromPlaylist;
