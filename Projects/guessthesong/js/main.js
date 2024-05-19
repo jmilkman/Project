@@ -20,6 +20,11 @@ let timerInterval;
 
 const Answer = [];
 
+var confettiSettings = { target: 'my-canvas' };
+var confetti = new ConfettiGenerator(confettiSettings);
+confetti.render();
+
+
 openBtn.addEventListener("click", () => {
     help.style.visibility = "visible";
 });
