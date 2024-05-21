@@ -140,7 +140,7 @@ async function getAccessToken() {
 }
 
 async function playRandomSongFromPlaylist() {
-    const playlistURI = '6j4w1woXd7xzGCNQoKrpY9';
+    const playlistURI = '4mBFdI5c0rM1LI7CzkzyrC';
 
     try {
         const accessToken = await getAccessToken();
