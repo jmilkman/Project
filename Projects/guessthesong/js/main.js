@@ -82,8 +82,9 @@ playButton.addEventListener('click', function() {
     const audioPlayer = document.querySelector('audio');
 
     if (audioPlayer) {
+        audioPlayer.currentTime = 0;
         audioPlayer.play();
-        resetTimer(); // Reset the timer when play button is pressed
+        resetTimer();
     }
 
     setTimeout(() => {
