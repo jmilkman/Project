@@ -33,12 +33,14 @@ h1 {
 
 body {
     background-color: #000835;
-    height: 100%;
-    display: grid;
-    place-items: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     color: #ededed;
-    padding-top: 90px;
-    overflow-y: hidden;
+    padding-top: 60px;
+    overflow-x: hidden;
+    margin: 0;
 }
 
 .header {
@@ -51,7 +53,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 100;
+    z-index: 100; /* Ensure header is on top */
 }
 
 .login__img {
@@ -87,9 +89,9 @@ body {
 .home {
     position: relative;
     width: 100%;
-    justify-content: space-between;
     height: 100vh;
-    background: url(..\img\login-bg.jpg);
+    background: url(..\img\login-bg.jpg) no-repeat center center/cover;
+    z-index: -1; /* Make sure it's behind other content */
 }
 
 .skipBtn {
