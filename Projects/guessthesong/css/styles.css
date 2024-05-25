@@ -32,13 +32,8 @@ h1 {
 }
 
 body {
-    background-color: #000835;
-    height: 100%;
-    display: grid;
-    place-items: center;
     color: #ededed;
-    padding-top: 90px;
-    overflow-y: hidden;
+    padding-top: 60px;
 }
 
 .header {
