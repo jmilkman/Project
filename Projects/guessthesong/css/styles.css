@@ -18,10 +18,10 @@
 }
 
 * {
-    margin: 0;
     padding: 0;
+    margin: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'poppins', sans-serif;
 }
 
 h1 {
@@ -33,14 +33,12 @@ h1 {
 
 body {
     background-color: #000835;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    height: 100%;
+    display: grid;
+    place-items: center;
     color: #ededed;
-    padding-top: 60px;
-    overflow-x: hidden;
-    margin: 0;
+    padding-top: 90px;
+   overflow-y: hidden;
 }
 
 .header {
@@ -86,13 +84,12 @@ body {
     color: #FF1A7D;
 }
 
-
 .home {
     position: relative;
     width: 100%;
+    justify-content: space-between;
     height: 100vh;
-    background: url(..\img\login-bg.jpg) no-repeat center center/cover;
-    z-index: -1; /* Make sure it's behind other content */
+    background: url(Main\img\login-bg.jpg);
 }
 
 .skipBtn {
