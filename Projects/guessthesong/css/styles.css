@@ -3,17 +3,17 @@
 
 /*=============== VARIABLES CSS ===============*/
 :root {
-    /* Color variables */
+    /*========== Colors ==========*/
     --white-color: hsl(0, 0%, 100%);
     --black-color: hsl(0, 0%, 0%);
-    
-    /* Font and typography */
+
+    /*========== Font and typography ==========*/
     --body-font: "Poppins", sans-serif;
     --h1-font-size: 1.75rem;
     --normal-font-size: 1rem;
     --small-font-size: 0.813rem;
-    
-    /* Font weight */
+
+    /*========== Font weight ==========*/
     --font-medium: 500;
 }
 
@@ -24,16 +24,17 @@
     font-family: var(--body-font);
 }
 
-h1 {
-    font-size: 40px;
-    color: white;
-    text-align: center;
-    padding: 10px;
-}
-
+/* Base Styles */
 body {
     color: #ededed;
     padding-top: 60px;
+}
+
+h1 {
+    font-size: var(--h1-font-size);
+    color: var(--white-color);
+    text-align: center;
+    padding: 10px;
 }
 
 .header {
@@ -72,7 +73,7 @@ body {
     text-decoration: none;
     font-weight: 500;
     margin-left: 35px;
-    transition: .3s;
+    transition: 0.3s;
 }
 
 .navbar a:hover {
@@ -88,15 +89,9 @@ body {
 }
 
 .skipBtn {
-    margin-right: 500px; /* Adjust this value as needed */
-}
-
-/* Skip btn */
-
-.skipBtn {
     border-radius: 5px;
     font-weight: bold;
-    font-size: 21px;
+    font-size: 1.3125rem;
     background: white;
     border: 2px solid black;
     width: 200px;
@@ -104,75 +99,60 @@ body {
     position: relative;
     right: 250px;
     top: 40px;
+    transition: background 0.3s;
 }
-.skipBtn::before {
-    content: "";
-    display: inline-block;
-}
+
 .skipBtn:hover {
     background: #FF1879;
 }
+
 .pulse-animation_skip {
     animation: pulse2 0.85s ease;
 }
+
 @keyframes pulse2 {
     0% {
         box-shadow: 0em 0em 0em 0em #FF1879;
     }
     100% {
-        box-shadow: 0em 0em 0em 1.50em hsla(250,100%,75%,0);
+        box-shadow: 0em 0em 0em 1.50em hsla(250, 100%, 75%, 0);
     }
 }
 
-/* Main background */
 .maincontainer {
-    width: 1500px;
-    height: 800px;
-
+    width: 90%;
+    max-width: 1500px;
+    height: 80vh;
     background-color: hsla(0, 0%, 10%, 0.1);
     border: 2px solid var(--white-color);
     border-radius: 1rem;
     backdrop-filter: blur(8px);
-
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 50px;
-    margin-left: 10%;
-
+    margin: 50px auto 0 auto;
 }
 
-/* Play Button Container */
 .playBtnContainer {
     position: relative;
-    margin-top: 120px; /* Adjust this value as needed */
+    margin-top: 10vh;
 }
 
-/* Play Button */
 .playBtn {
-    font-size: 100px;
+    font-size: 10vw;
     color: black;
     display: grid;
     place-items: center;
-    height: 1em;
-    width: 1em;
+    width: 15vw;
+    height: 15vw;
     border-radius: 50%;
     border: 2px solid black;
     background: white;
     cursor: pointer;
     transition: 0.3s;
     position: absolute;
-    bottom: 0; /* Position the button at the bottom of its container */
-    transform: translateX(-50%); /* Center horizontally */
-}
-
-.playBtn::before {
-    content: "";
-    display: inline-block;
-    border-left: 0.3em solid;
-    border-top: 0.18em solid transparent;
-    border-bottom: 0.18em solid transparent;
-    margin-right: -0.08em;
+    bottom: 0;
+    transform: translateX(-50%);
 }
 
 .playBtn:hover {
@@ -188,16 +168,14 @@ body {
         box-shadow: 0em 0em 0em 0em #FF1879;
     }
     100% {
-        box-shadow: 0em 0em 0em 0.3em hsla(250,100%,75%,0);
+        box-shadow: 0em 0em 0em 0.3em hsla(250, 100%, 75%, 0);
     }
 }
-
-/* Submit Button */
 
 .submitBtn {
     border-radius: 5px;
     font-weight: bold;
-    font-size: 21px;
+    font-size: 1.3125rem;
     background: white;
     border: 2px solid black;
     width: 200px;
@@ -205,36 +183,34 @@ body {
     position: relative;
     left: 250px;
     top: 40px;
+    transition: background 0.3s;
 }
-.submitBtn::before {
-    content: "";
-    display: inline-block;
-}
+
 .submitBtn:hover {
     background: #04AA6D;
 }
+
 .pulse-animation_submit {
     animation: pulse3 0.85s ease;
 }
+
 @keyframes pulse3 {
     0% {
         box-shadow: 0em 0em 0em 0em #04AA6D;
     }
     100% {
-        box-shadow: 0em 0em 0em 1.50em hsla(250,100%,75%,0);
+        box-shadow: 0em 0em 0em 1.50em hsla(250, 100%, 75%, 0);
     }
 }
 
-/* guess */
-
 .input-container {
-    display: inline-block; /* Ensure that the icon and input are displayed inline */
-    margin-top: -60px; /* Adjust as needed */
+    display: inline-block;
+    margin-top: -60px;
 }
 
 #guess {
-    width: 1404px;
-    font-size: 21px;
+    width: 90vw;
+    font-size: 1.3125rem;
     margin-top: 100px;
     border-radius: 5px;
     border: 2px solid black;
@@ -243,16 +219,16 @@ body {
 }
 
 .fa-search {
-    position: relative; /* Position the icon absolutely */
-    left: 40px; /* Adjust the distance from the left */
-    top: 7px; /* Adjust the distance from the left */
-    transform: translateY(-50%); /* Center it vertically */
+    position: relative;
+    left: 40px;
+    top: 7px;
+    transform: translateY(-50%);
     font-size: 16px;
     color: black;
 }
 
 .fa-question-circle {
-    position: relative; /* Position the icon absolutely */
+    position: relative;
     font-size: 25px;
     border: 2px solid black;
     border-radius: 50%;
@@ -278,21 +254,21 @@ body {
     margin-bottom: 20px;
     border-radius: 5px;
     border: 2px solid black;
-    font-size: 21px;
-    width: 1404px;
+    font-size: 1.3125rem;
+    width: 90vw;
     height: 55px;
     color: black;
 }
 
 .timer {
-    font-size: 30px;
+    font-size: 1.875rem;
     position: absolute;
     right: 640px;
     bottom: 25px;
 }
 
 .timeleft {
-    font-size: 30px;
+    font-size: 1.875rem;
     position: absolute;
     left: 640px;
     bottom: 25px;
@@ -308,13 +284,13 @@ body {
     align-items: center;
     justify-content: center;
     visibility: hidden;
-    background-color: white; /* Add white background */
-    border: 2px solid black; /* Add black border */
-    padding: 20px; /* Add padding for better appearance */
+    background-color: white;
+    border: 2px solid black;
+    padding: 20px;
     width: 400px;
     height: 352px;
     color: black;
-    transform: translate(137%, 23%); /* Center horizontally and vertically */
+    transform: translate(137%, 23%);
     text-align: center;
     border-radius: 5px;
 }
@@ -328,9 +304,11 @@ body {
     color: green;
     font-weight: bold;
 }
+
 .incorrect {
     color: red;
 }
+
 .fa-x {
     color: red;
     margin-right: 20px;
@@ -350,8 +328,7 @@ body {
     background: white;
     width: 450px;
     height: 300px;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.1),
-    0 0 0 1000px rgba(255, 255, 255, 0.301);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1), 0 0 0 1000px rgba(255, 255, 255, 0.301);
     display: none;
     justify-content: center;
     padding: 40px;
@@ -369,8 +346,7 @@ body {
     background: white;
     width: 450px;
     height: 300px;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.1),
-    0 0 0 1000px rgba(255, 255, 255, 0.301);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1), 0 0 0 1000px rgba(255, 255, 255, 0.301);
     display: none;
     justify-content: center;
     padding: 40px;
@@ -380,75 +356,23 @@ body {
     text-align: center;
 }
 
-.playAgain {
-    position: absolute;
-    top: 60%;
-    right: 50%;
-    transform: translate(50%, -50%);
-    padding: 10px 20px;
-    background: white;
-    color: black;
-    cursor: pointer;
-    border-radius: 5px;
-    border: 2px solid black;
-    z-index: 1000;
+.hidden {
+    display: none;
 }
 
-.playAgain:hover {
-    background: #FF1879;
-}
-
-.winningScreen.open {
-    display: flex;
-    opacity: 1;
-    z-index: 999;
-}
-
-.losingScreen.open {
-    display: flex;
-    opacity: 1;
-    z-index: 999;
-}
-
-#my-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: 100000;
-    pointer-events: none;
-    visibility: hidden;
-}
-
-#my-canvas.active {
-    visibility: visible;
-}
-
-.confetti-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 999;
-}
-
-
-/* Mobile styles */
+/* Mobile Styles */
 @media (max-width: 768px) {
     body {
         padding-top: 50px;
     }
-    
+
     .header {
         flex-direction: column;
         padding: 10px 5%;
     }
 
     h1 {
-        font-size: 1.5rem; /* Smaller font size on mobile */
+        font-size: 1.5rem;
     }
 
     .maincontainer {
@@ -461,12 +385,16 @@ body {
         width: 80%;
         font-size: 1rem;
         margin: 10px 0;
+        right: auto;
+        left: auto;
     }
 
     .playBtn {
         font-size: 2rem;
         width: 3rem;
         height: 3rem;
+        bottom: auto;
+        transform: none;
     }
 
     #guess, .guessbox1, .guessbox2, .guessbox3, .guessbox4, .guessbox5 {
@@ -494,5 +422,17 @@ body {
         width: 90%;
         height: auto;
         padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.25rem;
+    }
+
+    .playBtn {
+        font-size: 8vw;
+        width: 12vw;
+        height: 12vw;
     }
 }
