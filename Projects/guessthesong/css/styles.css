@@ -3,17 +3,17 @@
 
 /*=============== VARIABLES CSS ===============*/
 :root {
-    /*========== Colors ==========*/
+    /* Color variables */
     --white-color: hsl(0, 0%, 100%);
     --black-color: hsl(0, 0%, 0%);
-
-    /*========== Font and typography ==========*/
+    
+    /* Font and typography */
     --body-font: "Poppins", sans-serif;
     --h1-font-size: 1.75rem;
     --normal-font-size: 1rem;
     --small-font-size: 0.813rem;
-
-    /*========== Font weight ==========*/
+    
+    /* Font weight */
     --font-medium: 500;
 }
 
@@ -24,17 +24,17 @@
     font-family: var(--body-font);
 }
 
-/* Base Styles */
+h1 {
+    font-size: 40px;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
 body {
     color: #ededed;
     padding-top: 60px;
-}
-
-h1 {
-    font-size: var(--h1-font-size);
-    color: var(--white-color);
-    text-align: center;
-    padding: 10px;
+    overflow: hidden;
 }
 
 .header {
@@ -73,7 +73,7 @@ h1 {
     text-decoration: none;
     font-weight: 500;
     margin-left: 35px;
-    transition: 0.3s;
+    transition: .3s;
 }
 
 .navbar a:hover {
@@ -89,9 +89,15 @@ h1 {
 }
 
 .skipBtn {
+    margin-right: 500px; /* Adjust this value as needed */
+}
+
+/* Skip btn */
+
+.skipBtn {
     border-radius: 5px;
     font-weight: bold;
-    font-size: 1.3125rem;
+    font-size: 21px;
     background: white;
     border: 2px solid black;
     width: 200px;
@@ -99,60 +105,75 @@ h1 {
     position: relative;
     right: 250px;
     top: 40px;
-    transition: background 0.3s;
 }
-
+.skipBtn::before {
+    content: "";
+    display: inline-block;
+}
 .skipBtn:hover {
     background: #FF1879;
 }
-
 .pulse-animation_skip {
     animation: pulse2 0.85s ease;
 }
-
 @keyframes pulse2 {
     0% {
         box-shadow: 0em 0em 0em 0em #FF1879;
     }
     100% {
-        box-shadow: 0em 0em 0em 1.50em hsla(250, 100%, 75%, 0);
+        box-shadow: 0em 0em 0em 1.50em hsla(250,100%,75%,0);
     }
 }
 
+/* Main background */
 .maincontainer {
-    width: 90%;
-    max-width: 1500px;
-    height: 80vh;
+    width: 1500px;
+    height: 800px;
+
     background-color: hsla(0, 0%, 10%, 0.1);
     border: 2px solid var(--white-color);
     border-radius: 1rem;
     backdrop-filter: blur(8px);
+
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 50px auto 0 auto;
+    margin-top: 50px;
+    margin-left: 10%;
+
 }
 
+/* Play Button Container */
 .playBtnContainer {
     position: relative;
-    margin-top: 10vh;
+    margin-top: 120px; /* Adjust this value as needed */
 }
 
+/* Play Button */
 .playBtn {
-    font-size: 10vw;
+    font-size: 100px;
     color: black;
     display: grid;
     place-items: center;
-    width: 15vw;
-    height: 15vw;
+    height: 1em;
+    width: 1em;
     border-radius: 50%;
     border: 2px solid black;
     background: white;
     cursor: pointer;
     transition: 0.3s;
     position: absolute;
-    bottom: 0;
-    transform: translateX(-50%);
+    bottom: 0; /* Position the button at the bottom of its container */
+    transform: translateX(-50%); /* Center horizontally */
+}
+
+.playBtn::before {
+    content: "";
+    display: inline-block;
+    border-left: 0.3em solid;
+    border-top: 0.18em solid transparent;
+    border-bottom: 0.18em solid transparent;
+    margin-right: -0.08em;
 }
 
 .playBtn:hover {
@@ -168,14 +189,16 @@ h1 {
         box-shadow: 0em 0em 0em 0em #FF1879;
     }
     100% {
-        box-shadow: 0em 0em 0em 0.3em hsla(250, 100%, 75%, 0);
+        box-shadow: 0em 0em 0em 0.3em hsla(250,100%,75%,0);
     }
 }
+
+/* Submit Button */
 
 .submitBtn {
     border-radius: 5px;
     font-weight: bold;
-    font-size: 1.3125rem;
+    font-size: 21px;
     background: white;
     border: 2px solid black;
     width: 200px;
@@ -183,34 +206,36 @@ h1 {
     position: relative;
     left: 250px;
     top: 40px;
-    transition: background 0.3s;
 }
-
+.submitBtn::before {
+    content: "";
+    display: inline-block;
+}
 .submitBtn:hover {
     background: #04AA6D;
 }
-
 .pulse-animation_submit {
     animation: pulse3 0.85s ease;
 }
-
 @keyframes pulse3 {
     0% {
         box-shadow: 0em 0em 0em 0em #04AA6D;
     }
     100% {
-        box-shadow: 0em 0em 0em 1.50em hsla(250, 100%, 75%, 0);
+        box-shadow: 0em 0em 0em 1.50em hsla(250,100%,75%,0);
     }
 }
 
+/* guess */
+
 .input-container {
-    display: inline-block;
-    margin-top: -60px;
+    display: inline-block; /* Ensure that the icon and input are displayed inline */
+    margin-top: -60px; /* Adjust as needed */
 }
 
 #guess {
-    width: 90vw;
-    font-size: 1.3125rem;
+    width: 1404px;
+    font-size: 21px;
     margin-top: 100px;
     border-radius: 5px;
     border: 2px solid black;
@@ -219,16 +244,16 @@ h1 {
 }
 
 .fa-search {
-    position: relative;
-    left: 40px;
-    top: 7px;
-    transform: translateY(-50%);
+    position: relative; /* Position the icon absolutely */
+    left: 40px; /* Adjust the distance from the left */
+    top: 7px; /* Adjust the distance from the left */
+    transform: translateY(-50%); /* Center it vertically */
     font-size: 16px;
     color: black;
 }
 
 .fa-question-circle {
-    position: relative;
+    position: relative; /* Position the icon absolutely */
     font-size: 25px;
     border: 2px solid black;
     border-radius: 50%;
@@ -254,21 +279,21 @@ h1 {
     margin-bottom: 20px;
     border-radius: 5px;
     border: 2px solid black;
-    font-size: 1.3125rem;
-    width: 90vw;
+    font-size: 21px;
+    width: 1404px;
     height: 55px;
     color: black;
 }
 
 .timer {
-    font-size: 1.875rem;
+    font-size: 30px;
     position: absolute;
     right: 640px;
     bottom: 25px;
 }
 
 .timeleft {
-    font-size: 1.875rem;
+    font-size: 30px;
     position: absolute;
     left: 640px;
     bottom: 25px;
@@ -284,13 +309,13 @@ h1 {
     align-items: center;
     justify-content: center;
     visibility: hidden;
-    background-color: white;
-    border: 2px solid black;
-    padding: 20px;
+    background-color: white; /* Add white background */
+    border: 2px solid black; /* Add black border */
+    padding: 20px; /* Add padding for better appearance */
     width: 400px;
     height: 352px;
     color: black;
-    transform: translate(137%, 23%);
+    transform: translate(137%, 23%); /* Center horizontally and vertically */
     text-align: center;
     border-radius: 5px;
 }
@@ -304,11 +329,9 @@ h1 {
     color: green;
     font-weight: bold;
 }
-
 .incorrect {
     color: red;
 }
-
 .fa-x {
     color: red;
     margin-right: 20px;
@@ -328,7 +351,8 @@ h1 {
     background: white;
     width: 450px;
     height: 300px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1), 0 0 0 1000px rgba(255, 255, 255, 0.301);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.1),
+    0 0 0 1000px rgba(255, 255, 255, 0.301);
     display: none;
     justify-content: center;
     padding: 40px;
@@ -346,7 +370,8 @@ h1 {
     background: white;
     width: 450px;
     height: 300px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1), 0 0 0 1000px rgba(255, 255, 255, 0.301);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.1),
+    0 0 0 1000px rgba(255, 255, 255, 0.301);
     display: none;
     justify-content: center;
     padding: 40px;
@@ -356,83 +381,57 @@ h1 {
     text-align: center;
 }
 
-.hidden {
-    display: none;
+.playAgain {
+    position: absolute;
+    top: 60%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    padding: 10px 20px;
+    background: white;
+    color: black;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 2px solid black;
+    z-index: 1000;
 }
 
-/* Mobile Styles */
-@media (max-width: 768px) {
-    body {
-        padding-top: 50px;
-    }
-
-    .header {
-        flex-direction: column;
-        padding: 10px 5%;
-    }
-
-    h1 {
-        font-size: 1.5rem;
-    }
-
-    .maincontainer {
-        width: 95%;
-        height: auto;
-        margin: 20px auto;
-    }
-
-    .skipBtn, .submitBtn {
-        width: 80%;
-        font-size: 1rem;
-        margin: 10px 0;
-        right: auto;
-        left: auto;
-    }
-
-    .playBtn {
-        font-size: 2rem;
-        width: 3rem;
-        height: 3rem;
-        bottom: auto;
-        transform: none;
-    }
-
-    #guess, .guessbox1, .guessbox2, .guessbox3, .guessbox4, .guessbox5 {
-        width: 95%;
-        font-size: 1rem;
-        padding: 5px;
-    }
-
-    .timer, .timeleft {
-        font-size: 1.5rem;
-        right: auto;
-        left: auto;
-        bottom: 10px;
-    }
-
-    .help {
-        width: 90%;
-        height: auto;
-        padding: 10px;
-        transform: none;
-        border-radius: 5px;
-    }
-
-    .winningScreen, .losingScreen {
-        width: 90%;
-        height: auto;
-        padding: 20px;
-    }
+.playAgain:hover {
+    background: #FF1879;
 }
 
-@media (max-width: 480px) {
-    h1 {
-        font-size: 1.25rem;
-    }
+.winningScreen.open {
+    display: flex;
+    opacity: 1;
+    z-index: 999;
+}
 
-    .playBtn {
-        font-size: 8vw;
-        width: 12vw;
-        height: 12vw;
-    }
+.losingScreen.open {
+    display: flex;
+    opacity: 1;
+    z-index: 999;
+}
+
+#my-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 100000;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+#my-canvas.active {
+    visibility: visible;
+}
+
+.confetti-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
 }
