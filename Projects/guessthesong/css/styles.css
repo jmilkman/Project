@@ -3,17 +3,17 @@
 
 /*=============== VARIABLES CSS ===============*/
 :root {
-    /*========== Colors ==========*/
-    /*Color mode HSL(hue, saturation, lightness)*/
+    /* Color variables */
     --white-color: hsl(0, 0%, 100%);
     --black-color: hsl(0, 0%, 0%);
-    /*========== Font and typography ==========*/
-    /*.5rem = 8px | 1rem = 16px ...*/
+    
+    /* Font and typography */
     --body-font: "Poppins", sans-serif;
     --h1-font-size: 1.75rem;
     --normal-font-size: 1rem;
-    --small-font-size: .813rem;
-    /*========== Font weight ==========*/
+    --small-font-size: 0.813rem;
+    
+    /* Font weight */
     --font-medium: 500;
 }
 
@@ -21,7 +21,7 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    font-family: 'poppins', sans-serif;
+    font-family: var(--body-font);
 }
 
 h1 {
@@ -34,7 +34,6 @@ h1 {
 body {
     color: #ededed;
     padding-top: 60px;
-    overflow: hidden;
 }
 
 .header {
@@ -434,4 +433,66 @@ body {
     height: 100%;
     pointer-events: none;
     z-index: 999;
+}
+
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    body {
+        padding-top: 50px;
+    }
+    
+    .header {
+        flex-direction: column;
+        padding: 10px 5%;
+    }
+
+    h1 {
+        font-size: 1.5rem; /* Smaller font size on mobile */
+    }
+
+    .maincontainer {
+        width: 95%;
+        height: auto;
+        margin: 20px auto;
+    }
+
+    .skipBtn, .submitBtn {
+        width: 80%;
+        font-size: 1rem;
+        margin: 10px 0;
+    }
+
+    .playBtn {
+        font-size: 2rem;
+        width: 3rem;
+        height: 3rem;
+    }
+
+    #guess, .guessbox1, .guessbox2, .guessbox3, .guessbox4, .guessbox5 {
+        width: 95%;
+        font-size: 1rem;
+        padding: 5px;
+    }
+
+    .timer, .timeleft {
+        font-size: 1.5rem;
+        right: auto;
+        left: auto;
+        bottom: 10px;
+    }
+
+    .help {
+        width: 90%;
+        height: auto;
+        padding: 10px;
+        transform: none;
+        border-radius: 5px;
+    }
+
+    .winningScreen, .losingScreen {
+        width: 90%;
+        height: auto;
+        padding: 20px;
+    }
 }
