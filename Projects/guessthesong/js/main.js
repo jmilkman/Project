@@ -93,7 +93,7 @@ playButton.addEventListener('click', function() {
 });
 
 // Skip button
-let timeBetween = 1000; // Initial time between plays (1 second)
+let timeBetween = 500; // Initial time between plays (1 second)
 const skipIncrements = [1000, 3000, 3000, 6000]; // Skip time increments in milliseconds
 let currentIndex = 0; // Index to keep track of the current increment
 
