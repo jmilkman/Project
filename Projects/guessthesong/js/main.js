@@ -7,9 +7,6 @@
 const playButton = document.getElementById('playButton');
 const skipButton = document.getElementById('skipButton');
 const submitButton = document.getElementById('submitButton');
-const openBtn = document.getElementById("openHelp");
-const closeBtn = document.getElementById("closeHelp");
-const help = document.getElementById("help");
 const timerDisplay = document.getElementById('timer');
 const confe = document.querySelector('#my-canvas');
 
@@ -25,13 +22,6 @@ var confetti = new ConfettiGenerator(confettiSettings);
 confetti.render();
 
 
-openBtn.addEventListener("click", () => {
-    help.style.visibility = "visible";
-});
-
-closeBtn.addEventListener("click", () => {
-    help.style.visibility = "hidden";
-});
 
 const closeButtons = document.querySelectorAll('.playAgain');
 
@@ -93,9 +83,20 @@ playButton.addEventListener('click', function() {
 });
 
 // Skip button
-let timeBetween = 500; // Initial time between plays (1 second)
-const skipIncrements = [1000, 3000, 3000, 6000]; // Skip time increments in milliseconds
-let currentIndex = 0; // Index to keep track of the current increment
+// Play durations per attempt: 1s → 3s → 8s → 17s → 30s
+const playDurations = [1000, 3000, 8000, 17000, 30000];
+let timeBetween = playDurations[0];
+let currentIndex = 0;
+
+function advancePlayDuration() {
+    currentIndex = Math.min(currentIndex + 1, playDurations.length - 1);
+    timeBetween = playDurations[currentIndex];
+
+    const nextDuration = playDurations[Math.min(currentIndex + 1, playDurations.length - 1)];
+    skipButton.textContent = currentIndex < playDurations.length - 1
+        ? `Skip (${nextDuration / 1000}s)`
+        : 'Skip (max)';
+}
 
 skipButton.addEventListener('click', function() {
     this.classList.add('pulse-animation_skip');
@@ -104,10 +105,7 @@ skipButton.addEventListener('click', function() {
         this.classList.remove('pulse-animation_skip');
     }, 850);
 
-    timeBetween += skipIncrements[currentIndex];
-    this.textContent = `Skip (+${timeBetween / 1000}s)`;
-    currentIndex = (currentIndex + 1) % skipIncrements.length;
-
+    advancePlayDuration();
 });
 
 // Submit button
@@ -119,89 +117,62 @@ submitButton.addEventListener('click', function() {
     }, 850);
 });
 
-async function getAccessToken() {
-    const clientId = 'e53d2a0a504a4488800a5908036104b9';
-    const clientSecret = '1ed609c44ec14bebbe8fcd6e3c26e897';
+// ─── iTunes Search API: still provides 30-second previews ─────────────────────
+async function fetchItunesPreview(trackName, artistNames) {
+    try {
+        const firstArtist = artistNames.split(',')[0].trim();
+        const term = encodeURIComponent(`${firstArtist} ${trackName}`);
+        const response = await fetch(
+            `https://itunes.apple.com/search?term=${term}&media=music&entity=song&limit=5`
+        );
+        const data = await response.json();
+        const match = data.results.find(r => r.previewUrl);
+        return match ? match.previewUrl : null;
+    } catch {
+        return null;
+    }
+}
 
-    const credentials = btoa(`${clientId}:${clientSecret}`);
+// ─── Main loader ──────────────────────────────────────────────────────────────
+function setLoadingState() {
+    const btn = document.getElementById('playButton');
+    if (btn) btn.style.opacity = '0.4';
+}
 
-    const response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${credentials}`
-        },
-        body: 'grant_type=client_credentials'
-    });
-
-    const data = await response.json();
-    const accessToken = data.access_token;
-
-    return accessToken;
+function clearLoadingState() {
+    const btn = document.getElementById('playButton');
+    if (btn) btn.style.opacity = '1';
+    const status = document.getElementById('load-status');
+    if (status) status.textContent = 'Press play to listen';
 }
 
 async function playRandomSongFromPlaylist() {
-    const playlistURI = '4mBFdI5c0rM1LI7CzkzyrC';
+    setLoadingState();
 
-    try {
-        const accessToken = await getAccessToken();
+    // Shuffle and try tracks until one has an iTunes preview
+    const shuffled = [...PLAYLIST].sort(() => Math.random() - 0.5);
 
-        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistURI}/tracks?limit=100`, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            }
-        });
+    for (const track of shuffled.slice(0, 10)) {
+        const previewUrl = await fetchItunesPreview(track.name, track.artistNames);
 
-        const data = await response.json();
-        const songList = [];
+        if (previewUrl) {
+            Answer.push({ name: track.name, artistNames: track.artistNames });
 
-        const tracksWithPreview = data.items.filter(item => item.track.preview_url !== null);
+            const audioPlayer = document.createElement('audio');
+            audioPlayer.src = previewUrl;
+            audioPlayer.crossOrigin = 'anonymous';
 
-        if (tracksWithPreview.length > 0) {
-            // Create a set to store unique track names and artist names
-            const uniqueTracks = new Set();
+            document.getElementById('song-preview').innerHTML = '';
+            document.getElementById('song-preview').appendChild(audioPlayer);
 
-            // Filter unique tracks
-            tracksWithPreview.forEach(item => {
-                const track = item.track;
-                const trackName = track.name;
-                const artistNames = track.artists.map(artist => artist.name).join(', ');
-
-                // Combine track name and artist names to create a unique identifier
-                const uniqueIdentifier = `${trackName} - ${artistNames}`;
-
-                // Check if the identifier is already in the set
-                if (!uniqueTracks.has(uniqueIdentifier)) {
-                    uniqueTracks.add(uniqueIdentifier);
-                    songList.push({ name: trackName, artistNames: artistNames });
-                }
-            });
-
-            // Now you have a list of unique tracks, select a random track
-            if (songList.length > 0) {
-                const randomIndex = Math.floor(Math.random() * songList.length);
-                const track = songList[randomIndex];
-                const previewUrl = tracksWithPreview.find(item => item.track.name === track.name && item.track.artists.map(artist => artist.name).join(', ') === track.artistNames).track.preview_url;
-
-                const audioPlayer = document.createElement('audio');
-                audioPlayer.src = previewUrl;
-
-                Answer.push({ name: track.name, artistNames: track.artistNames });
-
-                listSongsOptions(songList);
-                addPlayPauseEventListener(audioPlayer);
-
-                document.getElementById('song-preview').innerHTML = '';
-                document.getElementById('song-preview').appendChild(audioPlayer);
-            } else {
-                document.getElementById('song-preview').innerHTML = 'No unique songs available in the playlist with preview URLs.';
-            }
-        } else {
-            document.getElementById('song-preview').innerHTML = 'No songs available in the playlist with preview URLs.';
+            addPlayPauseEventListener(audioPlayer);
+            clearLoadingState();
+            return Answer;
         }
-    } catch (error) {
-        console.error('Error:', error);
     }
+
+    console.error('Could not find an iTunes preview for any track.');
+    clearLoadingState();
     return Answer;
 }
 
@@ -220,20 +191,136 @@ function addPlayPauseEventListener(audioPlayer) {
     });
 }
 
-function listSongsOptions(songList) {
-    // Get the datalist element
-    const songListDatalist = document.getElementById('songList');
+// ─── Custom search dropdown ───────────────────────────────────────────────────
+const guessInput   = document.getElementById('guess');
+const dropdown     = document.getElementById('songDropdown');
+const dropdownList = document.getElementById('songDropdownList');
+const clearBtn     = document.getElementById('clearGuess');
+const searchIcon   = document.getElementById('searchIcon');
+let highlightedIndex = -1;
+let filteredSongs = [];
 
-    // Clear previous options
-    songListDatalist.innerHTML = '';
+function listSongsOptions() { /* songs live in PLAYLIST global, no DOM list needed */ }
 
-    // Populate options from songList array
-    songList.forEach(song => {
-        const option = document.createElement('option');
-        option.value = `${song.name} - ${song.artistNames}`;
-        songListDatalist.appendChild(option);
-    });
+function positionDropdown() {
+    const rect = guessInput.getBoundingClientRect();
+    dropdown.style.left   = rect.left + 'px';
+    dropdown.style.width  = rect.width + 'px';
+    dropdown.style.top    = 'auto';
+    dropdown.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
 }
+
+function showDropdown(songs, query) {
+    filteredSongs = songs;
+    highlightedIndex = -1;
+    dropdownList.innerHTML = '';
+
+    if (!songs.length) {
+        dropdown.classList.add('hidden');
+        return;
+    }
+
+    const re = query
+        ? new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+        : null;
+
+    songs.forEach((song, i) => {
+        const el = document.createElement('div');
+        el.className = 'song-option';
+        el.dataset.index = i;
+
+        const nameEl = document.createElement('span');
+        nameEl.className = 'song-name';
+        nameEl.innerHTML = re ? song.name.replace(re, '<em>$1</em>') : song.name;
+
+        const artistEl = document.createElement('span');
+        artistEl.className = 'song-artist';
+        artistEl.textContent = song.artistNames;
+
+        el.appendChild(nameEl);
+        el.appendChild(artistEl);
+
+        el.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            selectSong(song);
+        });
+
+        dropdownList.appendChild(el);
+    });
+
+    positionDropdown();
+    dropdown.classList.remove('hidden');
+}
+
+function selectSong(song) {
+    guessInput.value = `${song.name} - ${song.artistNames}`;
+    dropdown.classList.add('hidden');
+    clearBtn.classList.remove('hidden');
+    guessInput.focus();
+}
+
+function setHighlight(index) {
+    const items = dropdownList.querySelectorAll('.song-option');
+    items.forEach(el => el.classList.remove('highlighted'));
+    if (index >= 0 && index < items.length) {
+        items[index].classList.add('highlighted');
+        items[index].scrollIntoView({ block: 'nearest' });
+    }
+    highlightedIndex = index;
+}
+
+function getMatches(q) {
+    if (!q) return [...PLAYLIST].sort((a, b) => a.name.localeCompare(b.name));
+    const lq = q.toLowerCase();
+    return PLAYLIST.filter(s =>
+        s.name.toLowerCase().includes(lq) ||
+        s.artistNames.toLowerCase().includes(lq)
+    );
+}
+
+guessInput.addEventListener('input', () => {
+    const q = guessInput.value.trim();
+    clearBtn.classList.toggle('hidden', q === '');
+    searchIcon.style.color = q ? '#00daf3' : '#849396';
+    showDropdown(getMatches(q), q);
+});
+
+guessInput.addEventListener('keydown', (e) => {
+    const items = dropdownList.querySelectorAll('.song-option');
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setHighlight(Math.min(highlightedIndex + 1, items.length - 1));
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setHighlight(Math.max(highlightedIndex - 1, 0));
+    } else if (e.key === 'Enter') {
+        if (highlightedIndex >= 0 && filteredSongs[highlightedIndex]) {
+            selectSong(filteredSongs[highlightedIndex]);
+        }
+    } else if (e.key === 'Escape') {
+        dropdown.classList.add('hidden');
+    }
+});
+
+guessInput.addEventListener('focus', () => {
+    showDropdown(getMatches(guessInput.value.trim()), guessInput.value.trim());
+});
+
+guessInput.addEventListener('blur', () => {
+    setTimeout(() => dropdown.classList.add('hidden'), 150);
+});
+
+window.addEventListener('resize', () => {
+    if (!dropdown.classList.contains('hidden')) positionDropdown();
+});
+
+clearBtn.addEventListener('click', () => {
+    guessInput.value = '';
+    clearBtn.classList.add('hidden');
+    searchIcon.style.color = '#849396';
+    dropdown.classList.add('hidden');
+    guessInput.focus();
+});
 
 function skip() {
     const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
@@ -248,32 +335,40 @@ function skip() {
     guessBox.insertBefore(iconSpan, guessBox.firstChild);
 
     if (currentGuessBox == 5) {
+        document.querySelector(`.guessbox${currentGuessBox}`).classList.remove('active-box');
         losingpopup.classList.add('open');
     } else {
-        console.log(currentGuessBox);
+        advanceActiveBox(currentGuessBox);
         currentGuessBox++;
     }
 }
 
 let currentGuessBox = 1;
 
+function advanceActiveBox(from) {
+    document.querySelector(`.guessbox${from}`).classList.remove('active-box');
+    if (from < 5) {
+        document.querySelector(`.guessbox${from + 1}`).classList.add('active-box');
+    }
+}
+
 function submit(guess) {
     const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
     let correctGuess = false;
-    
+
     const correctAnswer = Answer[0];
 
     if (guess === `${correctAnswer.name} - ${correctAnswer.artistNames}`) {
         guessBox.textContent = guess;
         guessBox.classList.add('correct');
-    
+
         const iconSpan = document.createElement('span');
         iconSpan.classList.add('fa', 'fa-check');
-    
+
         guessBox.insertBefore(iconSpan, guessBox.firstChild);
 
         correctGuess = true;
-    
+        document.querySelector(`.guessbox${currentGuessBox}`).classList.remove('active-box');
         popup.classList.add('open');
         confe.classList.add('active');
 
@@ -284,14 +379,16 @@ function submit(guess) {
 
         const iconSpan = document.createElement('span');
         iconSpan.classList.add('fa', 'fa-x');
-        
+
         guessBox.insertBefore(iconSpan, guessBox.firstChild);
     }
 
     if (currentGuessBox == 5 && correctGuess == false) {
+        document.querySelector(`.guessbox${currentGuessBox}`).classList.remove('active-box');
         losingpopup.classList.add('open');
-    } else {
-        console.log(currentGuessBox);
+    } else if (!correctGuess) {
+        advancePlayDuration();
+        advanceActiveBox(currentGuessBox);
         currentGuessBox++;
     }
     document.getElementById('guess').value = "";

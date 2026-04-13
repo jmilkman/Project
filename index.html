@@ -1,29 +1,226 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE-edge">
-    <meta name="viewpoint" content="width-device-width, initial-scale=1.0">
-    <title>Portfolio Page</title>
-    <link rel="stylesheet" href="Main/css/styles.css">
-</head>
-<body>
-<img src="Login/img/login-bg.jpg" alt="login image" class="login__img">
-    <header class="header">
-        <a href="#" class="logo">Portfolio</a>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Jordan Mielke — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-fixed-dim":         "#00daf3",
+            "primary-fixed":             "#9cf0ff",
+            "primary-container":         "#00e5ff",
+            "primary":                   "#c3f5ff",
+            "secondary-container":       "#00818d",
+            "secondary":                 "#75d5e2",
+            "secondary-fixed":           "#92f1fe",
+            "secondary-fixed-dim":       "#75d5e2",
+            "tertiary":                  "#9affec",
+            "tertiary-container":        "#67e5d0",
+            "tertiary-fixed":            "#7af7e2",
+            "tertiary-fixed-dim":        "#5bdac6",
+            "surface-container-lowest":  "#060e20",
+            "surface-container-low":     "#131b2e",
+            "surface-container":         "#171f33",
+            "surface-container-high":    "#222a3d",
+            "surface-container-highest": "#2d3449",
+            "surface-variant":           "#2d3449",
+            "surface-bright":            "#31394d",
+            "surface-dim":               "#0b1326",
+            "surface":                   "#0b1326",
+            "background":                "#0b1326",
+            "on-background":             "#dae2fd",
+            "on-surface":                "#dae2fd",
+            "on-surface-variant":        "#bac9cc",
+            "on-primary":                "#00363d",
+            "on-primary-fixed":          "#001f24",
+            "on-primary-fixed-variant":  "#004f58",
+            "on-primary-container":      "#00626e",
+            "on-secondary":              "#00363c",
+            "on-secondary-fixed":        "#001f23",
+            "on-secondary-fixed-variant":"#004f56",
+            "on-secondary-container":    "#f6feff",
+            "on-tertiary":               "#003730",
+            "on-tertiary-fixed":         "#00201b",
+            "on-tertiary-fixed-variant": "#005047",
+            "on-tertiary-container":     "#006559",
+            "inverse-surface":           "#dae2fd",
+            "inverse-on-surface":        "#283044",
+            "inverse-primary":           "#006875",
+            "surface-tint":              "#00daf3",
+            "outline":                   "#849396",
+            "outline-variant":           "#3b494c",
+            "error":                     "#ffb4ab",
+            "error-container":           "#93000a",
+            "on-error":                  "#690005",
+            "on-error-container":        "#ffdad6",
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px",
+          },
+          fontFamily: {
+            headline: ["Space Grotesk"],
+            body:     ["Inter"],
+            label:    ["Inter"],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+    .glass-panel {
+      background: rgba(45,52,73,0.4);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(195,245,255,0.1);
+    }
+    .neural-glow { box-shadow: 0 0 40px rgba(0,218,243,0.15); }
+    .text-gradient {
+      background: linear-gradient(135deg, #c3f5ff 0%, #00daf3 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .dot-grid {
+      background-image: radial-gradient(rgba(0,218,243,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
 
-        <nav class="navbar">
-            <a href="index.html">Home</a>
-            <a href="About.html">About</a>
-            <a href="Projects.html">Projects</a>
-            <a href="Login.html">Login</a>
-        </nav>
-    </header>
-    <section class="home">
-        <div class="home-content">
-            <h3>Hello, I'm</h3>
-            <h1>Jordan Mielke</h1>
+    /* Spinning portrait ring — ported from Portfolio_Project */
+    .img-box {
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      position: relative;
+      padding: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    .img-box::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: conic-gradient(transparent, transparent, transparent, #00daf3);
+      animation: rotate-border 8s linear infinite;
+    }
+    @keyframes rotate-border {
+      100% { transform: rotate(360deg); }
+    }
+    .img-item {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #0b1326;
+      border-radius: 50%;
+      border: 1px solid #0b1326;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .img-item img {
+      position: absolute;
+      display: block;
+      width: 100%;
+      object-fit: cover;
+      mix-blend-mode: lighten;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container">
+
+  <!-- Top Nav -->
+  <nav class="fixed top-0 w-full z-50 bg-[#0b1326]/80 backdrop-blur-xl border-b border-[#00daf3]/10 shadow-[0_0_20px_rgba(0,229,255,0.05)]">
+    <div class="flex justify-between items-center px-8 py-4 max-w-full mx-auto">
+      <a href="index.html" class="text-2xl font-bold tracking-tighter text-[#c3f5ff] font-headline hover:text-[#00daf3] transition-colors">Jordan Mielke - Portfolio Website</a>
+      <div class="hidden md:flex items-center space-x-10 font-headline tracking-tight">
+        <a href="index.html"    class="text-[#00daf3] border-b-2 border-[#00daf3] pb-1 transition-all duration-300">Home</a>
+        <a href="About.html"    class="text-slate-400 hover:text-[#c3f5ff] transition-colors duration-300">Skills</a>
+        <a href="Projects.html" class="text-slate-400 hover:text-[#c3f5ff] transition-colors duration-300">Projects</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <main class="relative min-h-screen pt-20 overflow-hidden flex flex-col justify-center">
+
+    <!-- Background decorations -->
+    <div class="absolute inset-0 z-0">
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[150px]"></div>
+      <div class="absolute inset-0 dot-grid opacity-100"></div>
+    </div>
+
+    <!-- Content grid -->
+    <div class="container mx-auto px-8 grid grid-cols-1 md:grid-cols-12 gap-12 items-center relative z-10 py-20">
+
+      <!-- Left: Editorial typography -->
+      <div class="md:col-span-7 flex flex-col items-start space-y-8">
+        <div class="space-y-4">
+
+          <h1 class="font-headline text-7xl md:text-8xl font-bold tracking-tighter leading-[0.9] text-on-background">
+            Hi, I'm <br/>
+            <span class="text-gradient">Jordan Mielke</span>
+          </h1>
+          <p class="font-headline text-xl md:text-2xl text-on-surface-variant font-light tracking-widest mt-6">
+            SOFTWARE ENGINEER
+          </p>
         </div>
-    </section>
+        <p class="max-w-xl text-lg text-slate-400 leading-relaxed font-body">
+          I'm a Computer Science graduate with a minor in Cybersecurity, now working as a Software Engineer. I build clean, reliable software and bring a security-aware mindset to everything I ship.
+        </p>
+        <div class="flex items-center space-x-6 pt-4">
+          <a href="Projects.html" class="group relative px-10 py-5 bg-gradient-to-r from-primary-fixed-dim to-secondary-container rounded-full overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(0,218,243,0.3)]">
+            <div class="flex items-center space-x-3 text-on-primary font-bold tracking-widest text-sm">
+              <span>VIEW PROJECTS</span>
+              <span class="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </div>
+          </a>
+          <a href="About.html" class="px-8 py-5 text-primary border border-outline-variant/30 rounded-full hover:bg-primary/5 transition-all font-medium tracking-wide">
+            VIEW SKILLS
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Portrait with spinning ring -->
+      <div class="md:col-span-5 flex items-center justify-center relative">
+        <!-- Ambient glow behind the ring -->
+        <div class="absolute w-80 h-80 bg-[#00daf3]/10 rounded-full blur-[80px] pointer-events-none"></div>
+        <div class="img-box">
+          <div class="img-item">
+            <img src="Main/img/header-img.png" alt="Jordan Mielke"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#060e20] w-full py-12 px-8">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="text-lg font-black text-[#c3f5ff] uppercase tracking-widest font-headline">Jordan Mielke</div>
+      <div class="flex space-x-10 font-body text-sm tracking-wide">
+        <a href="About.html"    class="text-slate-500 hover:text-[#00daf3] transition-colors duration-200">Skills</a>
+        <a href="Projects.html" class="text-slate-500 hover:text-[#00daf3] transition-colors duration-200">Projects</a>
+        <a href="#"             class="text-slate-500 hover:text-[#00daf3] transition-colors duration-200">Contact</a>
+      </div>
+      <div class="text-slate-500 font-body text-xs tracking-wide">© 2024 JORDAN MIELKE. ALL RIGHTS RESERVED.</div>
+    </div>
+  </footer>
+
 </body>
 </html>

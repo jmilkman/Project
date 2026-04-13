@@ -1,107 +1,371 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE-edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guess The Song</title>
-    <link rel="stylesheet" href="css/styles.css" />
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Guess The Song — Jordan Mielke</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-fixed-dim":         "#00daf3",
+            "primary-fixed":             "#9cf0ff",
+            "primary-container":         "#00e5ff",
+            "primary":                   "#c3f5ff",
+            "secondary-container":       "#00818d",
+            "secondary":                 "#75d5e2",
+            "secondary-fixed-dim":       "#75d5e2",
+            "tertiary":                  "#9affec",
+            "surface-container-lowest":  "#060e20",
+            "surface-container-low":     "#131b2e",
+            "surface-container":         "#171f33",
+            "surface-container-high":    "#222a3d",
+            "surface-container-highest": "#2d3449",
+            "surface-variant":           "#2d3449",
+            "surface":                   "#0b1326",
+            "background":                "#0b1326",
+            "on-background":             "#dae2fd",
+            "on-surface":                "#dae2fd",
+            "on-surface-variant":        "#bac9cc",
+            "on-primary":                "#00363d",
+            "outline":                   "#849396",
+            "outline-variant":           "#3b494c",
+          },
+          borderRadius: {
+            DEFAULT: "8px",
+            lg: "12px",
+            xl: "16px",
+            full: "9999px",
+          },
+          fontFamily: {
+            headline: ["Space Grotesk"],
+            body:     ["Inter"],
+            label:    ["Inter"],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+
+    /* Glass panel */
+    .glass-panel {
+      background: rgba(11,19,38,0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(195,245,255,0.1);
+    }
+    .neural-glow { box-shadow: 0 0 40px 0 rgba(0,218,243,0.08); }
+    .neural-mesh {
+      background-image:
+        radial-gradient(at 0% 0%, rgba(0,218,243,0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(195,245,255,0.05) 0px, transparent 50%);
+    }
+
+    /* Guess boxes */
+    .guessbox1 p, .guessbox2 p, .guessbox3 p,
+    .guessbox4 p, .guessbox5 p {
+      margin: 0;
+      font-size: 0.875rem;
+      font-family: 'Inter', sans-serif;
+      color: #bac9cc;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 100%;
+      padding: 0 16px;
+    }
+    .guessbox1 p.correct, .guessbox2 p.correct,
+    .guessbox3 p.correct, .guessbox4 p.correct,
+    .guessbox5 p.correct {
+      color: #9affec;
+      font-weight: 600;
+    }
+    .guessbox1 p.incorrect, .guessbox2 p.incorrect,
+    .guessbox3 p.incorrect, .guessbox4 p.incorrect,
+    .guessbox5 p.incorrect {
+      color: #ffb4ab;
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+    .guessbox1, .guessbox2, .guessbox3, .guessbox4, .guessbox5 {
+      height: 48px;
+      width: 100%;
+      background: rgba(34,42,61,0.4);
+      border-radius: 8px;
+      border: 1px solid rgba(59,73,76,0.3);
+      display: flex;
+      align-items: center;
+    }
+
+    /* Pending slot indicator */
+    .slot-indicator {
+      flex-shrink: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-left: 16px;
+      background: rgba(186,201,204,0.25);
+      transition: background 0.3s ease;
+    }
+    .active-box .slot-indicator {
+      background: rgba(0,218,243,0.7);
+      box-shadow: 0 0 6px rgba(0,218,243,0.5);
+      animation: dot-pulse 2s ease-in-out infinite;
+    }
+    @keyframes dot-pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+    /* Active guess box highlight */
+    .guessbox1.active-box, .guessbox2.active-box,
+    .guessbox3.active-box, .guessbox4.active-box,
+    .guessbox5.active-box {
+      border-color: rgba(0,218,243,0.3);
+      background: rgba(0,218,243,0.05);
+      animation: pulse-border 2s ease-in-out infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { border-color: rgba(0,218,243,0.3); }
+      50%       { border-color: rgba(0,218,243,0.6); }
+    }
+
+    /* Play button pulse */
+    @keyframes pulse-ring {
+      0%   { transform: scale(1);   opacity: 0.4; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+    .pulse-animation .pulse-ring {
+      animation: pulse-ring 0.8s ease-out forwards;
+    }
+
+    /* Win/Lose overlays */
+    .winningScreen, .losingScreen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(6,14,32,0.85);
+      backdrop-filter: blur(12px);
+      align-items: center;
+      justify-content: center;
+    }
+    .winningScreen.open, .losingScreen.open {
+      display: flex;
+    }
+    .winningScreen-inner, .losingScreen-inner {
+      background: rgba(23,31,51,0.95);
+      border: 1px solid rgba(195,245,255,0.15);
+      border-radius: 24px;
+      padding: 48px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    /* Custom search dropdown */
+    .song-option {
+      display: flex;
+      flex-direction: column;
+      padding: 10px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(59,73,76,0.25);
+      transition: background 0.15s ease;
+    }
+    .song-option:last-child { border-bottom: none; }
+    .song-option:hover, .song-option.highlighted {
+      background: rgba(0,218,243,0.08);
+    }
+    .song-option .song-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #dae2fd;
+      font-family: 'Inter', sans-serif;
+    }
+    .song-option .song-artist {
+      font-size: 0.75rem;
+      color: #849396;
+      font-family: 'Inter', sans-serif;
+      margin-top: 1px;
+    }
+    .song-option .song-name em {
+      color: #00daf3;
+      font-style: normal;
+    }
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(59,73,76,0.6); border-radius: 2px; }
+
+    /* Confetti canvas */
+    #my-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 99;
+      display: none;
+    }
+    #my-canvas.active { display: block; }
+
+    /* Hidden audio player */
+    #song-preview audio { display: none; }
+  </style>
 </head>
-<body>
-    <img src="img/login-bg.jpg" alt="login image" class="login__img">
-    <header class="header">
-        <a href="#" class="logo">Portfolio</a>
+<body class="bg-background text-on-surface font-body neural-mesh flex flex-col overflow-hidden" style="height:100vh;">
 
-        <nav class="navbar">
-            <a href="../../index.html">Home</a>
-            <a href="../../About.html">About</a>
-            <a href="../../Projects.html">Projects</a>
-            <a href="../../Login.html">Login</a>
-        </nav>
-    </header>
-    
-    <div class="maincontainer">
-        
-        <div class="headerContainer">
-            <h1>Play a Random Song from my Playlist</h1>
-            <div id="song-preview"></div>
-            <i class="fas fa-question-circle" id="openHelp"></i>
-        </div>
-
-        <div class="help" id="help">
-            <div class="help-inner">
-                <h2>How to play</h2>
-                <p>
-                    <br>Listen to the song, a few seconds at a time.<br><br>
-
-                    If you know the song, type it in and submit.<br><br>
-
-                    If you need more information, click skip to play the next few seconds.<br><br>
-
-                    Play again if your having fun!<br><br>
-                </p>
-                <button id="closeHelp">Close</button>
-            </div>
-        </div>
-
-        <div class="guesscontainer">
-            <!-- Guess #1 -->
-            <div class="guessbox1">
-                <p></p>
-            </div>
-            <!-- Guess #2 -->
-            <div class="guessbox2">
-                <p></p>
-            </div>
-            <!-- Guess #3 -->
-            <div class="guessbox3">
-                <p></p>
-            </div>
-            <!-- Guess #4 -->
-            <div class="guessbox4">
-                <p></p>
-            </div>
-            <!-- Guess #5 -->
-            <div class="guessbox5">
-                <p></p>
-            </div>
-        </div>
-
-        <div class="playBtnContainer">
-            <button class="playBtn" id="playButton"></button>
-            <div class="timer" id="timer">0:00</div>
-            <div class="timeleft" id="timeleft">0:30</div>
-        </div>
-
-        <div class="input-container">
-            <i class="fas fa-search"></i>
-            <input type="text" id="guess" list="songList" placeholder="Search for the artist / title...">
-            <datalist id="songList"></datalist>
-        </div>
-        
-        <div class="button-container">
-            <button class="skipBtn" id="skipButton" onclick="skip()">SKIP</button>
-            <button class="submitBtn" id="submitButton" onclick="submit(document.getElementById('guess').value)">SUBMIT</button>
-        </div>
+  <!-- Nav -->
+  <nav class="fixed top-0 w-full z-50 bg-[#0b1326]/80 backdrop-blur-xl border-b border-[#00daf3]/10 shadow-[0_0_20px_rgba(0,229,255,0.05)]">
+    <div class="flex justify-between items-center px-8 py-4 max-w-full mx-auto">
+      <div class="flex items-center gap-4">
+        <a href="../../index.html" class="text-2xl font-bold tracking-tighter text-[#c3f5ff] font-headline hover:text-[#00daf3] transition-colors">Jordan Mielke - Portfolio Website</a>
+        <div class="h-6 w-px bg-outline-variant mx-1"></div>
+        <span class="text-sm font-medium tracking-widest text-primary-fixed-dim uppercase hidden sm:block">Song Guesser</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 font-headline tracking-tight">
+        <a href="../../index.html"    class="text-slate-400 hover:text-[#c3f5ff] transition-colors">Home</a>
+        <a href="../../About.html"    class="text-slate-400 hover:text-[#c3f5ff] transition-colors">Skills</a>
+        <a href="../../Projects.html" class="text-[#00daf3] border-b-2 border-[#00daf3] pb-1 transition-all">Projects</a>
+      </div>
     </div>
+  </nav>
 
-    <div class="winningScreen" id="winningScreen">
-        <div class="winningScreen-inner">
-            <h2>Congratulations you won!</h2>
-            <b class="playAgain">Play again?</b>
+  <!-- Main -->
+  <main class="flex-grow pt-[72px] px-6 flex flex-col items-center justify-center relative overflow-hidden">
+
+    <!-- Ambient glows -->
+    <div class="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-secondary/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+    <div class="z-10 w-full max-w-4xl">
+
+      <!-- Glass card -->
+      <div class="glass-panel rounded-2xl p-8 md:p-12 neural-glow relative overflow-hidden">
+
+        <!-- Top bar -->
+        <div class="flex items-center justify-between mb-8 border-b border-outline-variant/30 pb-6">
+          <h2 class="text-on-surface font-headline font-bold text-4xl">Song Guesser</h2>
+          <div class="relative group">
+            <span class="material-symbols-outlined text-outline hover:text-primary transition-colors cursor-default select-none">help</span>
+            <!-- Tooltip -->
+            <div class="absolute right-0 top-8 w-64 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+              <div class="bg-surface-container-highest border border-outline-variant/40 rounded-xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)] text-left">
+                <p class="text-xs font-headline font-bold text-on-surface uppercase tracking-widest mb-3">How to Play</p>
+                <ul class="space-y-2 text-xs text-on-surface-variant leading-relaxed">
+                  <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> Press play to hear a short clip</li>
+                  <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> Type a guess and hit Submit</li>
+                  <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> Skip to reveal more of the song</li>
+                  <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> You get 5 attempts — good luck!</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
 
-    <div class="losingScreen" id="losingScreen">
-        <div class="losingScreen-inner">
-            <h2>You lose!</h2>
-            <b class="playAgain">Play again?</b>
+        <!-- Hidden audio container -->
+        <div id="song-preview"></div>
+
+        <!-- Guess boxes (queue) -->
+        <div class="flex flex-col gap-3 mb-10">
+          <div class="guessbox1 active-box"><span class="slot-indicator" data-slot="1"></span><p></p></div>
+          <div class="guessbox2"><span class="slot-indicator" data-slot="2"></span><p></p></div>
+          <div class="guessbox3"><span class="slot-indicator" data-slot="3"></span><p></p></div>
+          <div class="guessbox4"><span class="slot-indicator" data-slot="4"></span><p></p></div>
+          <div class="guessbox5"><span class="slot-indicator" data-slot="5"></span><p></p></div>
         </div>
+
+        <!-- Play button + timer -->
+        <div class="flex flex-col items-center mb-10">
+          <p class="text-xs text-outline tracking-widest uppercase mb-4" id="load-status">Loading song...</p>
+          <div class="flex items-center justify-between w-full max-w-sm mb-6">
+            <span class="text-sm font-mono text-primary/80" id="timer">0:00</span>
+            <button id="playButton" class="group relative flex items-center justify-center" style="opacity:0.4;">
+              <!-- Pulse ring -->
+              <div class="pulse-ring absolute w-24 h-24 rounded-full bg-[#00daf3]/20 opacity-0"></div>
+              <!-- Button -->
+              <div class="relative w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:scale-105 active:scale-95 transition-transform">
+                <span class="material-symbols-outlined text-background text-5xl translate-x-0.5" style="font-variation-settings:'FILL' 1;">play_arrow</span>
+              </div>
+            </button>
+            <span class="text-sm font-mono text-primary/80" id="timeleft">0:30</span>
+          </div>
+        </div>
+
+        <!-- Search input -->
+        <div class="mb-6 relative">
+          <div class="relative">
+            <div class="absolute left-5 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+              <span class="material-symbols-outlined transition-colors duration-200" id="searchIcon" style="color:#849396;">search</span>
+            </div>
+            <input
+              id="guess"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="Search for the artist or title..."
+              class="w-full bg-surface-container-lowest border-2 border-outline-variant/30 rounded-lg py-4 pl-14 pr-10 text-on-surface placeholder:text-outline/50 focus:ring-0 focus:border-primary-fixed-dim transition-all outline-none font-medium"
+            />
+            <button id="clearGuess" class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors hidden">
+              <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Skip / Submit -->
+        <div class="grid grid-cols-2 gap-4">
+          <button id="skipButton" onclick="skip()"
+            class="py-4 rounded-lg bg-surface-container-high text-on-surface font-headline font-bold uppercase tracking-widest text-sm border border-outline-variant/30 hover:bg-surface-variant hover:border-outline-variant/60 transition-all active:scale-[0.98]">
+            SKIP
+          </button>
+          <button id="submitButton" onclick="submit(document.getElementById('guess').value)"
+            class="py-4 rounded-lg bg-white text-background font-headline font-bold uppercase tracking-widest text-sm hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] transition-all active:scale-[0.98]">
+            SUBMIT
+          </button>
+        </div>
+
+      </div>
     </div>
+  </main>
 
-    <canvas id="my-canvas"></canvas>
+  <!-- Search dropdown (fixed to escape overflow-hidden parents) -->
+  <div id="songDropdown" class="hidden fixed z-[200] rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.6)]" style="background:rgba(13,21,40,0.98);border:1px solid rgba(59,73,76,0.5);backdrop-filter:blur(24px);">
+    <div id="songDropdownList" class="max-h-80 overflow-y-auto custom-scroll"></div>
+  </div>
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="js/main.js"></script>
+  <!-- Win screen -->
+  <div class="winningScreen" id="winningScreen">
+    <div class="winningScreen-inner">
+      <div class="text-4xl mb-4">🎉</div>
+      <h2 class="text-2xl font-headline font-bold text-on-surface mb-2">You got it!</h2>
+      <p class="text-on-surface-variant text-sm mb-8">Nice ear. You identified the song.</p>
+      <button class="playAgain w-full py-4 rounded-lg bg-white text-background font-headline font-bold uppercase tracking-widest text-sm hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] transition-all">
+        Play Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Lose screen -->
+  <div class="losingScreen" id="losingScreen">
+    <div class="losingScreen-inner">
+      <div class="text-4xl mb-4">😔</div>
+      <h2 class="text-2xl font-headline font-bold text-on-surface mb-2">Better luck next time</h2>
+      <p class="text-on-surface-variant text-sm mb-8">You used all 5 attempts.</p>
+      <button class="playAgain w-full py-4 rounded-lg bg-surface-container-high border border-outline-variant/30 text-on-surface font-headline font-bold uppercase tracking-widest text-sm hover:bg-surface-variant transition-all">
+        Try Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Confetti canvas -->
+  <canvas id="my-canvas"></canvas>
+
+  <script src="playlist.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

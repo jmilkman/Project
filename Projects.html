@@ -1,65 +1,256 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE-edge">
-    <meta name="viewpoint" content="width-device-width, initial-scale=1.0">
-    <title>Portfolio Page</title>
-    <link rel="stylesheet" href="Projects/css/styles.css">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Projects — Neural Architect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-fixed-dim":         "#00daf3",
+            "primary-fixed":             "#9cf0ff",
+            "primary-container":         "#00e5ff",
+            "primary":                   "#c3f5ff",
+            "secondary-container":       "#00818d",
+            "secondary":                 "#75d5e2",
+            "secondary-fixed":           "#92f1fe",
+            "secondary-fixed-dim":       "#75d5e2",
+            "tertiary":                  "#9affec",
+            "tertiary-container":        "#67e5d0",
+            "surface-container-lowest":  "#060e20",
+            "surface-container-low":     "#131b2e",
+            "surface-container":         "#171f33",
+            "surface-container-high":    "#222a3d",
+            "surface-container-highest": "#2d3449",
+            "surface-variant":           "#2d3449",
+            "surface-bright":            "#31394d",
+            "surface-dim":               "#0b1326",
+            "surface":                   "#0b1326",
+            "background":                "#0b1326",
+            "on-background":             "#dae2fd",
+            "on-surface":                "#dae2fd",
+            "on-surface-variant":        "#bac9cc",
+            "on-primary":                "#00363d",
+            "on-secondary-container":    "#f6feff",
+            "outline":                   "#849396",
+            "outline-variant":           "#3b494c",
+            "error":                     "#ffb4ab",
+            "error-container":           "#93000a",
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px",
+          },
+          fontFamily: {
+            headline: ["Space Grotesk"],
+            body:     ["Inter"],
+            label:    ["Inter"],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+    .glass-card {
+      background: rgba(45,52,73,0.3);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(132,147,150,0.15);
+      transition: box-shadow 0.4s ease, transform 0.4s ease;
+    }
+    .glass-card:hover {
+      box-shadow: 0 0 40px rgba(0,218,243,0.12);
+    }
+    .dot-grid {
+      background-image: radial-gradient(rgba(0,218,243,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .tab-btn.active {
+      background: linear-gradient(to right, #00daf3, #00818d);
+      color: #00363d;
+      font-weight: 700;
+    }
+    /* Sorting visualizer preview bars */
+    .preview-bar { background: rgba(0,218,243,0.35); border-radius: 2px 2px 0 0; }
+    .preview-bar:nth-child(even) { background: rgba(0,218,243,0.55); }
+  </style>
 </head>
-<body>
-    <img src="Login/img/login-bg.jpg" alt="login image" class="login__img">
-    <header class="header">
-        <a href="#" class="logo">Portfolio</a>
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container">
 
-        <nav class="navbar">
-            <a href="index.html">Home</a>
-            <a href="About.html">About</a>
-            <a href="Projects.html">Projects</a>
-            <a href="Login.html">Login</a>
-        </nav>
-    </header>
-    <div class="login">
-        <a href="Projects/Sorting_Page/Sorting_Page.html" class="login__form">
-            <div class="sorting-container">
-                <div class="Sorting__algos">
-                    Sorting Algorithms<br>
-                </div>
-                <div class="separator-vertical"></div>
-                <div class="Sorting__description">
-                    These sorting algorithms employ diverse strategies to organize elements.
-                    Merge Sort recursively divides the array, sorts sub-parts, and merges them.
-                    Quick Sort uses a pivot to efficiently partition and sort sub-arrays.
-                    Heap Sort builds a binary heap, extracting extreme elements for sorting.
-                    Bubble Sort iteratively compares and swaps adjacent elements.
-                    Despite differences, each algorithm offers unique trade-offs in terms of simplicity, efficiency, and suitability for varying dataset sizes.
-                </div>
-                <div class="separator-vertical"></div>
-                <div class="Sorting__picture">
-                    <img src="algorithm_image.jpg">
-                </div>
-            </div>
-        </a>
-        <a href="Projects/guessthesong/guessthesong.html" class="login__form">
-            <div class="sorting-container">
-                <div class="Sorting__algos">
-                    Guess The Song<br>
-                </div>
-                <div class="separator-vertical"></div>
-                <div class="Sorting__description">
-                    These sorting algorithms employ diverse strategies to organize elements.
-                    Merge Sort recursively divides the array, sorts sub-parts, and merges them.
-                    Quick Sort uses a pivot to efficiently partition and sort sub-arrays.
-                    Heap Sort builds a binary heap, extracting extreme elements for sorting.
-                    Bubble Sort iteratively compares and swaps adjacent elements.
-                    Despite differences, each algorithm offers unique trade-offs in terms of simplicity, efficiency, and suitability for varying dataset sizes.
-                </div>
-                <div class="separator-vertical"></div>
-                <div class="Sorting__picture">
-                    <img src="algorithm_image.jpg">
-                </div>
-            </div>
-        </a>
+  <!-- Top Nav -->
+  <nav class="fixed top-0 w-full z-50 bg-[#0b1326]/80 backdrop-blur-xl border-b border-[#00daf3]/10 shadow-[0_0_20px_rgba(0,229,255,0.05)]">
+    <div class="flex justify-between items-center px-8 py-4 max-w-full mx-auto">
+      <a href="index.html" class="text-2xl font-bold tracking-tighter text-[#c3f5ff] font-headline hover:text-[#00daf3] transition-colors">Jordan Mielke - Portfolio Website</a>
+      <div class="hidden md:flex items-center space-x-10 font-headline tracking-tight">
+        <a href="index.html"    class="text-slate-400 hover:text-[#c3f5ff] transition-colors duration-300">Home</a>
+        <a href="About.html"    class="text-slate-400 hover:text-[#c3f5ff] transition-colors duration-300">Skills</a>
+        <a href="Projects.html" class="text-[#00daf3] border-b-2 border-[#00daf3] pb-1 transition-all duration-300">Projects</a>
+      </div>
     </div>
+  </nav>
+
+  <main class="pt-32 pb-24 px-8 max-w-7xl mx-auto text-center relative">
+
+    <!-- Background glows -->
+    <div class="fixed top-1/2 left-0 w-96 h-96 bg-primary/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
+    <div class="fixed bottom-1/4 right-0 w-96 h-96 bg-secondary/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
+    <div class="absolute inset-0 dot-grid pointer-events-none opacity-60"></div>
+
+    <!-- Projects Header -->
+    <header class="mb-16 max-w-4xl mx-auto relative z-10">
+      <div class="text-primary-fixed-dim font-label tracking-[0.3em] text-xs font-bold uppercase mb-4">WHAT I'VE BUILT</div>
+      <h1 class="text-6xl md:text-8xl font-headline font-bold tracking-tighter mb-8 bg-gradient-to-br from-primary via-primary-container to-secondary bg-clip-text text-transparent">
+        Projects
+      </h1>
+      <p class="text-lg md:text-xl font-body text-on-surface-variant font-light leading-relaxed mb-12">
+        A collection of interactive tools and applications built to explore algorithms, data structures, and modern web development. Each project demonstrates practical problem-solving and creative engineering.
+      </p>
+
+      <!-- Tab interface -->
+      <div class="inline-flex w-full max-w-xl border border-outline-variant/30 rounded-full overflow-hidden mb-0 bg-surface-container-low/50">
+        <button class="tab-btn active flex-1 py-3.5 font-headline transition-all text-sm uppercase tracking-widest" onclick="filterCards('all', this)">All</button>
+        <button class="tab-btn flex-1 py-3.5 font-headline text-on-surface-variant hover:text-primary transition-all text-sm uppercase tracking-widest border-x border-outline-variant/30" onclick="filterCards('interactive', this)">Interactive</button>
+        <button class="tab-btn flex-1 py-3.5 font-headline text-on-surface-variant hover:text-primary transition-all text-sm uppercase tracking-widest" onclick="filterCards('game', this)">Games</button>
+      </div>
+    </header>
+
+    <!-- Project grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10" id="project-grid">
+
+      <!-- Project 1: Sorting Visualizer -->
+      <a class="group block glass-card rounded-3xl overflow-hidden transition-all duration-500 hover:scale-[1.02]" href="Projects/Sorting_Page/Sorting_Page.html" data-category="interactive">
+        <!-- Preview thumbnail: generated bars -->
+        <div class="aspect-[16/10] overflow-hidden relative border-b border-outline-variant/20 bg-surface-container-lowest flex items-end px-6 pb-0 pt-6 gap-[3px]">
+          <div class="preview-bar w-full" style="height:25%"></div>
+          <div class="preview-bar w-full" style="height:60%"></div>
+          <div class="preview-bar w-full" style="height:38%"></div>
+          <div class="preview-bar w-full" style="height:80%"></div>
+          <div class="preview-bar w-full" style="height:45%"></div>
+          <div class="preview-bar w-full" style="height:92%"></div>
+          <div class="preview-bar w-full" style="height:55%"></div>
+          <div class="preview-bar w-full" style="height:18%"></div>
+          <div class="preview-bar w-full" style="height:70%"></div>
+          <div class="preview-bar w-full" style="height:35%"></div>
+          <div class="preview-bar w-full" style="height:85%"></div>
+          <div class="preview-bar w-full" style="height:48%"></div>
+          <div class="preview-bar w-full" style="height:22%"></div>
+          <div class="preview-bar w-full" style="height:65%"></div>
+          <div class="preview-bar w-full" style="height:30%"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-[#0b1326]/60 to-transparent pointer-events-none"></div>
+          <div class="absolute top-4 left-4 flex items-center gap-2 bg-surface-container-high/60 px-3 py-1 rounded-full border border-outline-variant/30 backdrop-blur-sm">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary-fixed-dim animate-pulse"></span>
+            <span class="text-[9px] font-bold tracking-widest uppercase text-primary-fixed-dim">Live Process</span>
+          </div>
+        </div>
+        <div class="p-8 text-left">
+          <span class="text-primary font-label text-[10px] tracking-widest uppercase mb-2 block">Interactive Tool</span>
+          <h3 class="text-2xl font-headline font-bold text-on-surface mb-2 group-hover:text-primary-fixed-dim transition-colors">Sorting Visualizer</h3>
+          <p class="text-on-surface-variant text-sm font-light leading-relaxed">
+            Real-time visualization of Bubble Sort, Merge Sort, Quick Sort and Heap Sort with adjustable speed controls and comparison metrics.
+          </p>
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <span class="text-[10px] px-2 py-1 rounded bg-surface-container-high text-outline uppercase tracking-wider font-label">JavaScript</span>
+            <span class="text-[10px] px-2 py-1 rounded bg-surface-container-high text-outline uppercase tracking-wider font-label">Algorithms</span>
+            <span class="text-[10px] px-2 py-1 rounded bg-surface-container-high text-outline uppercase tracking-wider font-label">Data Structures</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Project 2: Guess The Song -->
+      <a class="group block glass-card rounded-3xl overflow-hidden transition-all duration-500 hover:scale-[1.02]" href="Projects/guessthesong/guessthesong.html" data-category="game">
+        <!-- Preview thumbnail: music visualizer aesthetic -->
+        <div class="aspect-[16/10] overflow-hidden relative border-b border-outline-variant/20 bg-surface-container-lowest flex items-center justify-center">
+          <div class="absolute inset-0 bg-gradient-to-br from-secondary-container/20 to-transparent"></div>
+          <!-- Waveform decoration -->
+          <div class="flex items-center gap-1 z-10">
+            <div class="w-1 h-4 bg-secondary/60 rounded-full animate-[bounce_0.8s_ease-in-out_infinite]" style="animation-delay:0s"></div>
+            <div class="w-1 h-8 bg-secondary/70 rounded-full animate-[bounce_0.8s_ease-in-out_infinite]" style="animation-delay:0.1s"></div>
+            <div class="w-1 h-12 bg-primary-fixed-dim/80 rounded-full animate-[bounce_0.8s_ease-in-out_infinite]" style="animation-delay:0.2s"></div>
+            <div class="w-1 h-6 bg-secondary/60 rounded-full animate-[bounce_0.8s_ease-in-out_infinite]" style="animation-delay:0.3s"></div>
+            <div class="w-1 h-16 bg-primary-fixed-dim rounded-full animate-[bounce_0.8s_ease-in-out_infinite]" style="animation-delay:0.4s"></div>
+            <div class="w-1 h-10 bg-tertiary/70 rounded-full animate-[bounce_0.8s_ease-in-out_infinite]" style="animation-delay:0.5s"></div>
+            <div class="w-1 h-14 bg-primary-fixed-dim/80 rounded-full animate-[bounce_0.8s_ease-in-out_infinite]" style="animation-delay:0.6s"></div>
+            <div class="w-1 h-8 bg-secondary/60 rounded-full animate-[bounce_0.8s_ease-in-out_infinite]" style="animation-delay:0.7s"></div>
+            <div class="w-1 h-5 bg-tertiary/70 rounded-full animate-[bounce_0.8s_ease-in-out_infinite]" style="animation-delay:0.8s"></div>
+            <div class="w-1 h-11 bg-primary-fixed-dim/70 rounded-full animate-[bounce_0.8s_ease-in-out_infinite]" style="animation-delay:0.9s"></div>
+          </div>
+          <span class="material-symbols-outlined absolute text-secondary/20 text-[120px]" style="font-variation-settings:'FILL' 1">music_note</span>
+          <div class="absolute inset-0 bg-gradient-to-t from-[#0b1326]/60 to-transparent pointer-events-none"></div>
+        </div>
+        <div class="p-8 text-left">
+          <span class="text-secondary font-label text-[10px] tracking-widest uppercase mb-2 block">Music Game</span>
+          <h3 class="text-2xl font-headline font-bold text-on-surface mb-2 group-hover:text-secondary-fixed-dim transition-colors">Guess The Song</h3>
+          <p class="text-on-surface-variant text-sm font-light leading-relaxed">
+            An interactive music guessing game that challenges players to identify songs from short audio snippets with progressive difficulty.
+          </p>
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <span class="text-[10px] px-2 py-1 rounded bg-surface-container-high text-outline uppercase tracking-wider font-label">JavaScript</span>
+            <span class="text-[10px] px-2 py-1 rounded bg-surface-container-high text-outline uppercase tracking-wider font-label">Spotify API</span>
+            <span class="text-[10px] px-2 py-1 rounded bg-surface-container-high text-outline uppercase tracking-wider font-label">Web Audio</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Project 3: Placeholder / More Coming -->
+      <div class="group glass-card rounded-3xl overflow-hidden transition-all duration-500 opacity-50 cursor-default" data-category="interactive">
+        <div class="aspect-[16/10] overflow-hidden relative border-b border-outline-variant/20 bg-surface-container-lowest flex items-center justify-center">
+          <span class="material-symbols-outlined text-outline/30 text-[80px]">code</span>
+          <div class="absolute inset-0 bg-gradient-to-t from-[#0b1326]/60 to-transparent pointer-events-none"></div>
+        </div>
+        <div class="p-8 text-left">
+          <span class="text-outline font-label text-[10px] tracking-widest uppercase mb-2 block">In Development</span>
+          <h3 class="text-2xl font-headline font-bold text-on-surface-variant mb-2">Coming Soon</h3>
+          <p class="text-on-surface-variant text-sm font-light leading-relaxed">
+            Next project is currently in the build phase. Check back soon.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#060e20] border-t border-[#222a3d]/50 w-full py-12 px-8">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6 max-w-7xl mx-auto text-sm tracking-wide">
+      <div class="font-headline font-black text-[#c3f5ff] text-lg uppercase tracking-tighter">Jordan Mielke</div>
+      <div class="flex gap-8 font-body">
+        <a href="index.html"    class="text-slate-500 hover:text-[#00daf3] transition-colors duration-200">Home</a>
+        <a href="About.html"    class="text-slate-500 hover:text-[#00daf3] transition-colors duration-200">Skills</a>
+        <a href="#"             class="text-slate-500 hover:text-[#00daf3] transition-colors duration-200">Contact</a>
+      </div>
+      <div class="text-slate-500 opacity-80 uppercase tracking-tighter text-xs font-body">© 2024 JORDAN MIELKE. ALL RIGHTS RESERVED.</div>
+    </div>
+  </footer>
+
+  <script>
+    function filterCards(category, btn) {
+      // Update tab styling
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.classList.add('text-on-surface-variant');
+      });
+      btn.classList.add('active');
+      btn.classList.remove('text-on-surface-variant');
+
+      // Filter cards
+      document.querySelectorAll('#project-grid > *').forEach(card => {
+        const cardCat = card.dataset.category;
+        if (category === 'all' || cardCat === category) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script>
+
 </body>
 </html>

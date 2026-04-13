@@ -1,29 +1,234 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE-edge">
-    <meta name="viewpoint" content="width-device-width, initial-scale=1.0">
-    <title>Portfolio Page</title>
-    <link rel="stylesheet" href="Main/css/styles.css">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Skills — Neural Architect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-fixed-dim":         "#00daf3",
+            "primary-fixed":             "#9cf0ff",
+            "primary-container":         "#00e5ff",
+            "primary":                   "#c3f5ff",
+            "secondary-container":       "#00818d",
+            "secondary":                 "#75d5e2",
+            "secondary-fixed":           "#92f1fe",
+            "secondary-fixed-dim":       "#75d5e2",
+            "tertiary":                  "#9affec",
+            "tertiary-container":        "#67e5d0",
+            "surface-container-lowest":  "#060e20",
+            "surface-container-low":     "#131b2e",
+            "surface-container":         "#171f33",
+            "surface-container-high":    "#222a3d",
+            "surface-container-highest": "#2d3449",
+            "surface-variant":           "#2d3449",
+            "surface-bright":            "#31394d",
+            "surface-dim":               "#0b1326",
+            "surface":                   "#0b1326",
+            "background":                "#0b1326",
+            "on-background":             "#dae2fd",
+            "on-surface":                "#dae2fd",
+            "on-surface-variant":        "#bac9cc",
+            "on-primary":                "#00363d",
+            "on-primary-fixed":          "#001f24",
+            "on-secondary-container":    "#f6feff",
+            "outline":                   "#849396",
+            "outline-variant":           "#3b494c",
+            "error":                     "#ffb4ab",
+            "error-container":           "#93000a",
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px",
+          },
+          fontFamily: {
+            headline: ["Space Grotesk"],
+            body:     ["Inter"],
+            label:    ["Inter"],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+    .neural-glass {
+      background: rgba(45,52,73,0.3);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(195,245,255,0.1);
+    }
+    .circle-bg {
+      fill: none;
+      stroke: rgba(0,218,243,0.1);
+      stroke-width: 2.5;
+    }
+    .circle-progress {
+      fill: none;
+      stroke: #00daf3;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 8px rgba(0,218,243,0.4));
+      transition: stroke-dasharray 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .ring-svg {
+      display: block;
+      background: transparent;
+      border: none;
+      outline: none;
+      overflow: visible;
+    }
+    .dot-grid {
+      background-image: radial-gradient(rgba(0,218,243,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+  </style>
 </head>
-<body>
-<img src="Login/img/login-bg.jpg" alt="login image" class="login__img">
-    <header class="header">
-        <a href="#" class="logo">Portfolio</a>
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
 
-        <nav class="navbar">
-            <a href="index.html">Home</a>
-            <a href="About.html">About</a>
-            <a href="Projects.html">Projects</a>
-            <a href="Login.html">Login</a>
-        </nav>
+  <!-- Top Nav -->
+  <nav class="fixed top-0 w-full z-50 bg-[#0b1326]/80 backdrop-blur-xl border-b border-[#00daf3]/10 shadow-[0_0_20px_rgba(0,229,255,0.05)]">
+    <div class="flex justify-between items-center px-8 py-4 max-w-full mx-auto">
+      <a href="index.html" class="text-2xl font-bold tracking-tighter text-[#c3f5ff] font-headline hover:text-[#00daf3] transition-colors">Jordan Mielke - Portfolio Website</a>
+      <div class="hidden md:flex items-center space-x-10 font-headline tracking-tight">
+        <a href="index.html"    class="text-slate-400 hover:text-[#c3f5ff] transition-colors duration-300">Home</a>
+        <a href="About.html"    class="text-[#00daf3] border-b-2 border-[#00daf3] pb-1 transition-all duration-300">Skills</a>
+        <a href="Projects.html" class="text-slate-400 hover:text-[#c3f5ff] transition-colors duration-300">Projects</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="min-h-screen pt-32 pb-24 px-8 max-w-7xl mx-auto relative">
+
+    <!-- Ambient glow -->
+    <div class="absolute top-1/4 -left-64 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-1/4 -right-64 w-[500px] h-[500px] bg-secondary-container/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute inset-0 dot-grid pointer-events-none opacity-50"></div>
+
+    <!-- Section header -->
+    <header class="mb-20 space-y-2 relative z-10">
+      <div class="text-primary-fixed-dim font-label tracking-[0.3em] text-xs font-bold uppercase">WHAT I BRING</div>
+      <h1 class="text-6xl md:text-7xl font-headline font-bold tracking-tighter text-on-surface">
+        Skills &amp; <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Expertise</span>
+      </h1>
     </header>
-    <section class="home">
-        <div class="home-content">
-            <h3>Hello, I'm</h3>
-            <h1>Jordan Mielke</h1>
+
+    <!-- Skills bento grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch relative z-10" id="skills-grid">
+
+      <!-- Skill Card 1 -->
+      <div class="neural-glass p-8 rounded-xl flex flex-col items-center text-center group hover:scale-[1.02] transition-transform duration-500">
+        <div class="relative w-48 h-48 mb-8">
+          <svg class="ring-svg w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+            <path class="circle-bg"       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            <path class="circle-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="0, 100" data-value="90"/>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="text-4xl font-headline font-bold text-primary counter" data-target="90">0%</span>
+            <span class="text-[10px] tracking-widest text-outline uppercase font-label">Stability</span>
+          </div>
         </div>
-    </section>
+        <h3 class="text-xl font-headline font-bold mb-4 text-on-surface group-hover:text-primary transition-colors">Technical Support &amp; Troubleshooting</h3>
+        <p class="text-sm text-on-surface-variant leading-relaxed font-body">Diagnosing and resolving software issues across the stack, from debugging application logic to tracking down system-level problems.</p>
+      </div>
+
+      <!-- Skill Card 2 -->
+      <div class="neural-glass p-8 rounded-xl flex flex-col items-center text-center group hover:scale-[1.02] transition-transform duration-500">
+        <div class="relative w-48 h-48 mb-8">
+          <svg class="ring-svg w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+            <path class="circle-bg"       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            <path class="circle-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="0, 100" data-value="80"/>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="text-4xl font-headline font-bold text-primary counter" data-target="80">0%</span>
+            <span class="text-[10px] tracking-widest text-outline uppercase font-label">Efficiency</span>
+          </div>
+        </div>
+        <h3 class="text-xl font-headline font-bold mb-4 text-on-surface group-hover:text-primary transition-colors">Scripting &amp; Automation</h3>
+        <p class="text-sm text-on-surface-variant leading-relaxed font-body">Writing Python and shell scripts to automate repetitive tasks and streamline development workflows.</p>
+      </div>
+
+      <!-- Skill Card 3 -->
+      <div class="neural-glass p-8 rounded-xl flex flex-col items-center text-center group hover:scale-[1.02] transition-transform duration-500">
+        <div class="relative w-48 h-48 mb-8">
+          <svg class="ring-svg w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+            <path class="circle-bg"       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            <path class="circle-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="0, 100" data-value="80"/>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="text-4xl font-headline font-bold text-primary counter" data-target="80">0%</span>
+            <span class="text-[10px] tracking-widest text-outline uppercase font-label">Velocity</span>
+          </div>
+        </div>
+        <h3 class="text-xl font-headline font-bold mb-4 text-on-surface group-hover:text-primary transition-colors">Software Development</h3>
+        <p class="text-sm text-on-surface-variant leading-relaxed font-body">Building full-stack applications with a focus on clean code, maintainability, and security best practices.</p>
+      </div>
+
+    </div>
+
+    <!-- Secondary skill tags -->
+    <div class="mt-12 relative z-10 flex flex-wrap gap-3">
+      <span class="px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/30 text-xs font-label font-bold tracking-widest uppercase text-on-surface-variant hover:border-primary-fixed-dim/40 hover:text-primary transition-all cursor-default">Python</span>
+      <span class="px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/30 text-xs font-label font-bold tracking-widest uppercase text-on-surface-variant hover:border-primary-fixed-dim/40 hover:text-primary transition-all cursor-default">JavaScript</span>
+      <span class="px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/30 text-xs font-label font-bold tracking-widest uppercase text-on-surface-variant hover:border-primary-fixed-dim/40 hover:text-primary transition-all cursor-default">Java</span>
+      <span class="px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/30 text-xs font-label font-bold tracking-widest uppercase text-on-surface-variant hover:border-primary-fixed-dim/40 hover:text-primary transition-all cursor-default">HTML &amp; CSS</span>
+      <span class="px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/30 text-xs font-label font-bold tracking-widest uppercase text-on-surface-variant hover:border-primary-fixed-dim/40 hover:text-primary transition-all cursor-default">Shell Scripting</span>
+      <span class="px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/30 text-xs font-label font-bold tracking-widest uppercase text-on-surface-variant hover:border-primary-fixed-dim/40 hover:text-primary transition-all cursor-default">Data Structures</span>
+      <span class="px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/30 text-xs font-label font-bold tracking-widest uppercase text-on-surface-variant hover:border-primary-fixed-dim/40 hover:text-primary transition-all cursor-default">Algorithms</span>
+      <span class="px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/30 text-xs font-label font-bold tracking-widest uppercase text-on-surface-variant hover:border-primary-fixed-dim/40 hover:text-primary transition-all cursor-default">Git</span>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#060e20] w-full py-12 px-8">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6 max-w-7xl mx-auto">
+      <div class="text-lg font-black text-[#c3f5ff] uppercase tracking-widest font-headline">Jordan Mielke</div>
+      <div class="flex gap-8 text-sm font-body tracking-wide">
+        <a href="index.html"    class="text-slate-500 hover:text-[#00daf3] transition-colors duration-200">Home</a>
+        <a href="Projects.html" class="text-slate-500 hover:text-[#00daf3] transition-colors duration-200">Projects</a>
+        <a href="#"             class="text-slate-500 hover:text-[#00daf3] transition-colors duration-200">Contact</a>
+      </div>
+      <div class="text-slate-500 text-xs font-body tracking-wide">© 2024 JORDAN MIELKE. ALL RIGHTS RESERVED.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Animate circular progress rings on load
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const card = entry.target;
+
+        // Animate SVG ring
+        const ring = card.querySelector('.circle-progress');
+        const target = parseInt(ring.dataset.value);
+        ring.style.strokeDasharray = `${target}, 100`;
+
+        // Animate counter text
+        const counter = card.querySelector('.counter');
+        let current = 0;
+        const step = target / 60;
+        const tick = setInterval(() => {
+          current = Math.min(current + step, target);
+          counter.textContent = Math.round(current) + '%';
+          if (current >= target) clearInterval(tick);
+        }, 16);
+
+        observer.unobserve(card);
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('#skills-grid > div').forEach(card => observer.observe(card));
+  </script>
+
 </body>
 </html>
