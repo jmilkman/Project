@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check /mnt/c/Users/Jorda/Documents/GitHub/jmielke.github.io/Projects/osrs_location_guesser/js/main.js)",
+      "Bash(ls:*)"
+    ]
+  }
+}

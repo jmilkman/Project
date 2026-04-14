@@ -146,10 +146,7 @@
           <div class="preview-bar w-full" style="height:65%"></div>
           <div class="preview-bar w-full" style="height:30%"></div>
           <div class="absolute inset-0 bg-gradient-to-t from-[#0b1326]/60 to-transparent pointer-events-none"></div>
-          <div class="absolute top-4 left-4 flex items-center gap-2 bg-surface-container-high/60 px-3 py-1 rounded-full border border-outline-variant/30 backdrop-blur-sm">
-            <span class="w-1.5 h-1.5 rounded-full bg-primary-fixed-dim animate-pulse"></span>
-            <span class="text-[9px] font-bold tracking-widest uppercase text-primary-fixed-dim">Live Process</span>
-          </div>
+
         </div>
         <div class="p-8 text-left">
           <span class="text-primary font-label text-[10px] tracking-widest uppercase mb-2 block">Interactive Tool</span>
@@ -200,20 +197,34 @@
         </div>
       </a>
 
-      <!-- Project 3: Placeholder / More Coming -->
-      <div class="group glass-card rounded-3xl overflow-hidden transition-all duration-500 opacity-50 cursor-default" data-category="interactive">
+      <!-- Project 3: OSRS Location Guesser -->
+      <a class="group block glass-card rounded-3xl overflow-hidden transition-all duration-500 hover:scale-[1.02]"
+         href="Projects/osrs_location_guesser/osrs_location_guesser.html" data-category="game">
         <div class="aspect-[16/10] overflow-hidden relative border-b border-outline-variant/20 bg-surface-container-lowest flex items-center justify-center">
-          <span class="material-symbols-outlined text-outline/30 text-[80px]">code</span>
+          <!-- Map grid texture -->
+          <div class="absolute inset-0 opacity-20"
+               style="background-image: repeating-linear-gradient(0deg,rgba(0,218,243,0.15) 0px,transparent 1px,transparent 40px),repeating-linear-gradient(90deg,rgba(0,218,243,0.15) 0px,transparent 1px,transparent 40px);">
+          </div>
+          <span class="material-symbols-outlined z-10 text-[#00daf3]/70" style="font-size:80px;font-variation-settings:'FILL' 0,'wght' 300">my_location</span>
+          <span class="material-symbols-outlined absolute z-10 text-[#9affec]"
+                style="font-size:34px;font-variation-settings:'FILL' 1,'wght' 400;top:28%;left:56%">location_on</span>
+          <div class="absolute inset-0 bg-gradient-to-br from-tertiary/5 to-transparent pointer-events-none"></div>
           <div class="absolute inset-0 bg-gradient-to-t from-[#0b1326]/60 to-transparent pointer-events-none"></div>
+
         </div>
         <div class="p-8 text-left">
-          <span class="text-outline font-label text-[10px] tracking-widest uppercase mb-2 block">In Development</span>
-          <h3 class="text-2xl font-headline font-bold text-on-surface-variant mb-2">Coming Soon</h3>
+          <span class="text-tertiary font-label text-[10px] tracking-widest uppercase mb-2 block">Geography Game</span>
+          <h3 class="text-2xl font-headline font-bold text-on-surface mb-2 group-hover:text-tertiary transition-colors">OSRS Location Guesser</h3>
           <p class="text-on-surface-variant text-sm font-light leading-relaxed">
-            Next project is currently in the build phase. Check back soon.
+            A GeoGuessr-style game set in Old School RuneScape. Pan the world map, drop a pin, and score points based on how close your guess is to the actual location.
           </p>
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <span class="text-[10px] px-2 py-1 rounded bg-surface-container-high text-outline uppercase tracking-wider font-label">JavaScript</span>
+            <span class="text-[10px] px-2 py-1 rounded bg-surface-container-high text-outline uppercase tracking-wider font-label">Canvas API</span>
+            <span class="text-[10px] px-2 py-1 rounded bg-surface-container-high text-outline uppercase tracking-wider font-label">OSRS</span>
+          </div>
         </div>
-      </div>
+      </a>
 
     </div>
   </main>
