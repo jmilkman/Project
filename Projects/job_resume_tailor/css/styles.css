@@ -1,0 +1,206 @@
+/* ── Job Resume Tailor — Custom Styles ────────────────────────────── */
+
+/* Glass panel */
+.glass-panel {
+  background: rgba(11, 19, 38, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(195, 245, 255, 0.1);
+  box-shadow: 0 0 40px rgba(0, 218, 243, 0.04), 0 8px 32px rgba(0,0,0,0.35);
+}
+
+/* ── Radio Pills (resume mode toggle) ───────────────────────────── */
+.radio-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 9999px;
+  border: 1px solid rgba(59, 73, 76, 0.5);
+  background: rgba(23, 31, 51, 0.4);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  color: #bac9cc;
+  transition: all 0.2s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+.radio-pill input[type="radio"] { display: none; }
+.radio-pill.selected {
+  border-color: rgba(0, 218, 243, 0.5);
+  background: rgba(0, 218, 243, 0.1);
+  color: #00daf3;
+}
+.radio-pill:hover:not(.selected) {
+  border-color: rgba(195, 245, 255, 0.25);
+  color: #c3f5ff;
+}
+
+/* ── CTA Buttons ────────────────────────────────────────────────── */
+.cta-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #00daf3, #00818d);
+  color: #00363d;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+}
+.cta-primary:hover:not(:disabled) {
+  filter: brightness(1.12);
+  box-shadow: 0 0 24px rgba(0, 218, 243, 0.35);
+}
+.cta-primary:active:not(:disabled) { transform: scale(0.97); }
+.cta-primary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  filter: none;
+  box-shadow: none;
+}
+
+.cta-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  border: 1px solid rgba(59, 73, 76, 0.6);
+  color: #c3f5ff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cta-secondary:hover {
+  background: rgba(195, 245, 255, 0.06);
+  border-color: rgba(0, 218, 243, 0.4);
+  box-shadow: 0 0 16px rgba(0, 218, 243, 0.08);
+}
+
+/* ── Form Inputs ─────────────────────────────────────────────────── */
+.form-input {
+  width: 100%;
+  background: rgba(23, 31, 51, 0.7) !important;
+  border: 1px solid rgba(59, 73, 76, 0.6) !important;
+  border-radius: 12px !important;
+  padding: 12px 16px 12px 46px !important;
+  color: #e8f4f6 !important;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: none;
+}
+.form-input::placeholder { color: rgba(132, 147, 150, 0.55) !important; }
+.form-input:focus {
+  border-color: rgba(0, 218, 243, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(0, 218, 243, 0.08) !important;
+  background: rgba(23, 31, 51, 0.85) !important;
+}
+.form-input-no-icon {
+  padding-left: 16px !important;
+}
+
+/* ── Prompt Output ───────────────────────────────────────────────── */
+.prompt-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: #dae2fd;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 20px 52px 20px 20px;
+  background: rgba(6, 14, 32, 0.6);
+  border: 1px solid rgba(59, 73, 76, 0.35);
+  border-radius: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+/* ── Step Pills (compact row) ────────────────────────────────────── */
+.step-pill {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(59, 73, 76, 0.4);
+  background: rgba(23, 31, 51, 0.5);
+  color: #849396;
+  font-size: 0.75rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+.step-pill.active {
+  border-color: rgba(0, 218, 243, 0.4);
+  background: rgba(0, 218, 243, 0.08);
+  color: #00daf3;
+}
+
+/* ── Step Indicator ──────────────────────────────────────────────── */
+.step-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(59, 73, 76, 0.5);
+  background: rgba(23, 31, 51, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #849396;
+  font-family: 'Space Grotesk', sans-serif;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+.step-dot.active {
+  border-color: #00daf3;
+  background: rgba(0, 218, 243, 0.15);
+  color: #00daf3;
+  box-shadow: 0 0 14px rgba(0, 218, 243, 0.3);
+}
+.step-dot.complete {
+  border-color: #00818d;
+  background: rgba(0, 129, 141, 0.2);
+  color: #9affec;
+}
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background: rgba(59, 73, 76, 0.4);
+  max-width: 80px;
+  align-self: flex-start;
+  margin-top: 16px;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(59, 73, 76, 0.6); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 218, 243, 0.3); }
+
+/* ── Material Icons ──────────────────────────────────────────────── */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+
+/* ── Utility ─────────────────────────────────────────────────────── */
+.hidden { display: none !important; }

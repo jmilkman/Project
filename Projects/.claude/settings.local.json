@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls /mnt/c/Users/Jorda/Documents/GitHub/jmielke.github.io/*.html)"
+    ]
+  }
+}

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Resume Tailor — Jordan Mielke</title>
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary-fixed-dim":         "#00daf3",
+            "primary-fixed":             "#9cf0ff",
+            "secondary":                 "#75d5e2",
+            "tertiary":                  "#9affec",
+            "background":                "#0b1326",
+            "surface":                   "#0b1326",
+            "surface-container-lowest":  "#060e20",
+            "surface-container-low":     "#111a30",
+            "surface-container":         "#171f33",
+            "surface-container-high":    "#1e2740",
+            "surface-container-highest": "#252f4c",
+            "on-surface":                "#dae2fd",
+            "on-surface-variant":        "#bac9cc",
+            "outline":                   "#849396",
+            "outline-variant":           "#3b494c",
+            "error":                     "#f28b82",
+          },
+          fontFamily: {
+            headline: ["Space Grotesk", "sans-serif"],
+            body:     ["Inter", "sans-serif"],
+            label:    ["Inter", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="bg-background text-on-surface font-body min-h-screen flex flex-col">
+
+  <!-- ── Navigation ──────────────────────────────────────────────── -->
+  <nav class="fixed top-0 w-full z-50 bg-[#0b1326]/80 backdrop-blur-xl border-b border-[#00daf3]/10 shadow-[0_0_20px_rgba(0,229,255,0.05)]">
+    <div class="flex justify-between items-center px-8 py-4 max-w-full mx-auto">
+      <div class="flex items-center gap-4">
+        <a href="../../index.html" class="text-2xl font-bold tracking-tighter text-[#c3f5ff] font-headline hover:text-[#00daf3] transition-colors">Jordan Mielke - Portfolio Website</a>
+        <div class="h-6 w-px bg-outline-variant mx-1"></div>
+        <span class="text-sm font-medium tracking-widest text-primary-fixed-dim uppercase">Job Resume Tailor</span>
+      </div>
+      <div class="flex items-center gap-8 font-headline tracking-tight">
+        <a href="../../index.html"    class="text-slate-400 hover:text-[#c3f5ff] transition-colors">Home</a>
+        <a href="../../About.html"    class="text-slate-400 hover:text-[#c3f5ff] transition-colors">Skills</a>
+        <a href="../../Projects.html" class="text-[#00daf3] border-b-2 border-[#00daf3] pb-1 transition-all">Projects</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Ambient Glow ─────────────────────────────────────────────── -->
+  <div class="fixed top-1/4 -left-32 w-[600px] h-[600px] bg-primary-fixed-dim/4 blur-[140px] pointer-events-none"></div>
+  <div class="fixed bottom-1/4 -right-32 w-[600px] h-[600px] bg-secondary/4 blur-[140px] pointer-events-none"></div>
+
+  <main class="flex-grow pt-[72px] pb-12 px-6 max-w-3xl mx-auto w-full flex flex-col">
+
+    <!-- ── Header ─────────────────────────────────────────────────── -->
+    <header class="text-center pt-5 pb-4">
+      <h1 class="text-4xl md:text-5xl font-headline font-black text-on-surface leading-none mb-2">
+        Job Resume
+        <span class="text-transparent bg-clip-text" style="background-image:linear-gradient(135deg,#00daf3,#9affec)">Tailor</span>
+      </h1>
+      <p class="text-on-surface-variant text-sm font-light max-w-lg mx-auto">
+        Paste a job description, get an AI-ready prompt — then let ChatGPT rewrite your resume for free.
+      </p>
+    </header>
+
+    <!-- ── Compact Steps Row ──────────────────────────────────────── -->
+    <div class="flex items-center justify-center gap-2 mb-4 text-xs font-label text-on-surface-variant">
+      <span class="step-pill active">1 · Paste job description</span>
+      <span class="material-symbols-outlined text-outline-variant text-base">arrow_forward</span>
+      <span class="step-pill" id="step2-pill">2 · Copy the prompt</span>
+      <span class="material-symbols-outlined text-outline-variant text-base">arrow_forward</span>
+      <span class="step-pill" id="step3-pill">3 · Paste into ChatGPT</span>
+    </div>
+
+    <!-- ── Input Card ─────────────────────────────────────────────── -->
+    <div class="glass-panel rounded-2xl p-6 mb-5">
+
+      <!-- Job Description -->
+      <label class="block text-xs font-label font-semibold text-on-surface-variant uppercase tracking-wider mb-3">
+        Job Description
+      </label>
+      <textarea
+        id="input-job-text"
+        class="form-input form-input-no-icon w-full"
+        rows="5"
+        placeholder="Paste the full job posting here — title, responsibilities, requirements, everything…"
+        style="resize:vertical; padding-top:12px; padding-bottom:12px; line-height:1.65;"
+      ></textarea>
+
+      <!-- Resume mode toggle -->
+      <div class="mt-4">
+        <label class="block text-xs font-label font-semibold text-on-surface-variant uppercase tracking-wider mb-2 text-center">
+          How will you share your resume with ChatGPT?
+        </label>
+        <div class="flex gap-2 justify-center">
+          <label id="pill-upload" class="radio-pill selected">
+            <input type="radio" name="resume-mode" value="upload" checked />
+            <span class="material-symbols-outlined text-sm">upload_file</span>
+            Upload file
+          </label>
+          <label id="pill-paste" class="radio-pill">
+            <input type="radio" name="resume-mode" value="paste" />
+            <span class="material-symbols-outlined text-sm">article</span>
+            Paste as text
+          </label>
+        </div>
+      </div>
+
+      <!-- Resume paste area (shown only when paste mode is selected) -->
+      <div id="resume-paste-wrap" class="hidden mt-3">
+        <label class="block text-xs font-label font-semibold text-on-surface-variant uppercase tracking-wider mb-2">
+          Your Resume
+        </label>
+        <textarea
+          id="input-resume-text"
+          class="form-input form-input-no-icon w-full"
+          rows="5"
+          placeholder="Paste your resume text here…"
+          style="resize:vertical; padding-top:12px; padding-bottom:12px; line-height:1.65;"
+        ></textarea>
+      </div>
+
+      <button id="btn-generate" class="cta-primary w-full mt-4" disabled>
+        <span class="material-symbols-outlined text-base">auto_fix_high</span>
+        Generate Prompt
+      </button>
+    </div>
+
+    <!-- ── Output Section (hidden until generated) ────────────────── -->
+    <div id="output-section" class="hidden glass-panel rounded-2xl p-6">
+
+      <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-tertiary text-base">check_circle</span>
+          <h2 class="text-base font-headline font-semibold text-on-surface">Prompt Ready</h2>
+        </div>
+        <span class="text-xs text-outline">Paste this into ChatGPT, then upload your resume</span>
+      </div>
+
+      <!-- Prompt output -->
+      <div class="relative mt-3">
+        <pre id="prompt-output" class="prompt-text"></pre>
+        <button id="btn-copy-inline" class="absolute top-3 right-3 flex items-center gap-1.5 text-xs font-label font-semibold text-outline hover:text-primary-fixed-dim transition-colors bg-surface-container-high/80 px-3 py-1.5 rounded-full border border-outline-variant/30 hover:border-primary-fixed-dim/30">
+          <span class="material-symbols-outlined text-sm">content_copy</span>
+          Copy
+        </button>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 mt-4 flex-wrap">
+        <button id="btn-copy" class="cta-secondary flex-1" style="min-width:140px">
+          <span class="material-symbols-outlined text-sm">content_copy</span>
+          Copy Prompt
+        </button>
+        <a href="https://chatgpt.com" target="_blank" rel="noopener noreferrer" class="cta-primary flex-1" style="min-width:140px; text-decoration:none;">
+          <span class="material-symbols-outlined text-sm">open_in_new</span>
+          Open ChatGPT
+        </a>
+      </div>
+
+      <!-- Tip -->
+      <div class="flex items-start gap-2 mt-4 pt-4 border-t border-outline-variant/20">
+        <span class="material-symbols-outlined text-primary-fixed-dim/60 text-base mt-0.5 flex-shrink-0">tips_and_updates</span>
+        <p id="output-tip" class="text-xs text-outline leading-relaxed"></p>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

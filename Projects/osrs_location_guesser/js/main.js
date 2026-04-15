@@ -502,6 +502,8 @@ function onMapClick(clientX, clientY) {
   STATE.guessY = normY;
   STATE.guessPlaced = true;
 
+  console.log(`Marker placed: x=${normX.toFixed(4)}, y=${normY.toFixed(4)}`);
+
   placeGuessMarker(normX, normY);
   submitBtn.disabled = false;
   placementHint.textContent = 'Reposition by clicking again or submit your guess';
