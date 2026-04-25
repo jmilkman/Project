@@ -120,7 +120,25 @@ submitButton.addEventListener('click', function() {
     }, 850);
 });
 
-// ─── iTunes Search API: still provides 30-second previews ─────────────────────
+// ─── Deezer Search API (primary — works on mobile) ───────────────────────────
+async function fetchDeezerPreview(trackName, artistNames) {
+    try {
+        const firstArtist = artistNames.split(',')[0].trim();
+        const q = encodeURIComponent(`${firstArtist} ${trackName}`);
+        const response = await fetch(
+            `https://api.deezer.com/search?q=${q}&limit=5`
+        );
+        const data = await response.json();
+        const match = data.data && data.data.find(r => r.preview);
+        return match ? match.preview : null;
+    } catch {
+        return null;
+    }
+}
+
+// ─── iTunes Search API (fallback) ─────────────────────────────────────────────
+// Note: iTunes API suppresses previewUrl for mobile user-agents, so it is only
+// used as a fallback when Deezer returns nothing.
 async function fetchItunesPreview(trackName, artistNames) {
     try {
         const firstArtist = artistNames.split(',')[0].trim();
@@ -129,7 +147,7 @@ async function fetchItunesPreview(trackName, artistNames) {
             `https://itunes.apple.com/search?term=${term}&media=music&entity=song&limit=5`
         );
         const data = await response.json();
-        const match = data.results.find(r => r.previewUrl);
+        const match = data.results && data.results.find(r => r.previewUrl);
         return match ? match.previewUrl : null;
     } catch {
         return null;
@@ -152,11 +170,13 @@ function clearLoadingState() {
 async function playRandomSongFromPlaylist() {
     setLoadingState();
 
-    // Shuffle and try tracks until one has an iTunes preview
     const shuffled = [...PLAYLIST].sort(() => Math.random() - 0.5);
 
     for (const track of shuffled.slice(0, 10)) {
-        const previewUrl = await fetchItunesPreview(track.name, track.artistNames);
+        // Try Deezer first (works on mobile), fall back to iTunes
+        const previewUrl =
+            (await fetchDeezerPreview(track.name, track.artistNames)) ||
+            (await fetchItunesPreview(track.name, track.artistNames));
 
         if (previewUrl) {
             Answer.push({ name: track.name, artistNames: track.artistNames });
@@ -170,7 +190,7 @@ async function playRandomSongFromPlaylist() {
 
             addPlayPauseEventListener(audioPlayer);
             clearLoadingState();
-            return Answer;
+            return;
         }
     }
 
@@ -179,7 +199,6 @@ async function playRandomSongFromPlaylist() {
     Answer.push({ name: fallback.name, artistNames: fallback.artistNames });
     const status = document.getElementById('load-status');
     if (status) status.textContent = 'Preview unavailable';
-    return Answer;
 }
 
 function addPlayPauseEventListener(audioPlayer) {
