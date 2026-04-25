@@ -76,7 +76,7 @@ playButton.addEventListener('click', function() {
     if (audioPlayer) {
         audioPlayer.currentTime = 0;
         if (progressBar) progressBar.style.width = '0%';
-        audioPlayer.play();
+        audioPlayer.play().catch(() => {});
         resetTimer();
     }
 
@@ -162,8 +162,8 @@ async function playRandomSongFromPlaylist() {
             Answer.push({ name: track.name, artistNames: track.artistNames });
 
             const audioPlayer = document.createElement('audio');
+            audioPlayer.setAttribute('playsinline', '');
             audioPlayer.src = previewUrl;
-            audioPlayer.crossOrigin = 'anonymous';
 
             document.getElementById('song-preview').innerHTML = '';
             document.getElementById('song-preview').appendChild(audioPlayer);
@@ -174,8 +174,11 @@ async function playRandomSongFromPlaylist() {
         }
     }
 
-    console.error('Could not find an iTunes preview for any track.');
-    clearLoadingState();
+    // No preview found — still store a song so the reveal works
+    const fallback = shuffled[0];
+    Answer.push({ name: fallback.name, artistNames: fallback.artistNames });
+    const status = document.getElementById('load-status');
+    if (status) status.textContent = 'Preview unavailable';
     return Answer;
 }
 
