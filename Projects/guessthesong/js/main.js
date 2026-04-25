@@ -120,35 +120,31 @@ submitButton.addEventListener('click', function() {
     }, 850);
 });
 
-// ─── Deezer Search API (primary — works on mobile) ───────────────────────────
-async function fetchDeezerPreview(trackName, artistNames) {
-    try {
-        const firstArtist = artistNames.split(',')[0].trim();
-        const q = encodeURIComponent(`${firstArtist} ${trackName}`);
-        const response = await fetch(
-            `https://api.deezer.com/search?q=${q}&limit=5`
-        );
-        const data = await response.json();
-        const match = data.data && data.data.find(r => r.preview);
-        return match ? match.preview : null;
-    } catch {
-        return null;
-    }
-}
+// ─── Preview fetch ─────────────────────────────────────────────────────────────
+// Strategy:
+//   1. Try iTunes directly — fast, works on desktop.
+//   2. If no previewUrl comes back (mobile Safari UA suppresses it), retry the
+//      same request through allorigins.win, which fetches server-side with a
+//      neutral UA so iTunes returns full results.
+async function fetchPreview(trackName, artistNames) {
+    const firstArtist = artistNames.split(',')[0].trim();
+    const term       = encodeURIComponent(`${firstArtist} ${trackName}`);
+    const itunesUrl  = `https://itunes.apple.com/search?term=${term}&media=music&entity=song&limit=5`;
 
-// ─── iTunes Search API (fallback) ─────────────────────────────────────────────
-// Note: iTunes API suppresses previewUrl for mobile user-agents, so it is only
-// used as a fallback when Deezer returns nothing.
-async function fetchItunesPreview(trackName, artistNames) {
+    // 1. Direct call (desktop fast path)
     try {
-        const firstArtist = artistNames.split(',')[0].trim();
-        const term = encodeURIComponent(`${firstArtist} ${trackName}`);
-        const response = await fetch(
-            `https://itunes.apple.com/search?term=${term}&media=music&entity=song&limit=5`
-        );
-        const data = await response.json();
-        const match = data.results && data.results.find(r => r.previewUrl);
-        return match ? match.previewUrl : null;
+        const r = await fetch(itunesUrl);
+        const d = await r.json();
+        const m = d.results && d.results.find(x => x.previewUrl);
+        if (m) return m.previewUrl;
+    } catch {}
+
+    // 2. Proxy call (mobile fallback — server-side UA bypasses iTunes restriction)
+    try {
+        const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(itunesUrl)}`);
+        const d = await r.json();
+        const m = d.results && d.results.find(x => x.previewUrl);
+        return m ? m.previewUrl : null;
     } catch {
         return null;
     }
@@ -173,10 +169,7 @@ async function playRandomSongFromPlaylist() {
     const shuffled = [...PLAYLIST].sort(() => Math.random() - 0.5);
 
     for (const track of shuffled.slice(0, 10)) {
-        // Try Deezer first (works on mobile), fall back to iTunes
-        const previewUrl =
-            (await fetchDeezerPreview(track.name, track.artistNames)) ||
-            (await fetchItunesPreview(track.name, track.artistNames));
+        const previewUrl = await fetchPreview(track.name, track.artistNames);
 
         if (previewUrl) {
             Answer.push({ name: track.name, artistNames: track.artistNames });
