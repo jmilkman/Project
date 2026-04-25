@@ -66,6 +66,8 @@ function resetTimer() {
 }
 
 // Play button
+const progressBar = document.getElementById('progressBar');
+
 playButton.addEventListener('click', function() {
     this.classList.add('pulse-animation');
 
@@ -73,6 +75,7 @@ playButton.addEventListener('click', function() {
 
     if (audioPlayer) {
         audioPlayer.currentTime = 0;
+        if (progressBar) progressBar.style.width = '0%';
         audioPlayer.play();
         resetTimer();
     }
@@ -178,14 +181,30 @@ async function playRandomSongFromPlaylist() {
 
 function addPlayPauseEventListener(audioPlayer) {
     let isPlaying = false;
+    let rafId = null;
+
     audioPlayer.addEventListener('play', function() {
         startTimer();
         if (!isPlaying) {
+            const playStart = Date.now();
+            const duration  = timeBetween;
+
+            // Animate progress bar
+            function updateProgress() {
+                const pct = Math.min((Date.now() - playStart) / duration * 100, 100);
+                if (progressBar) progressBar.style.width = pct + '%';
+                if (pct < 100) rafId = requestAnimationFrame(updateProgress);
+            }
+            rafId = requestAnimationFrame(updateProgress);
+
             setTimeout(function() {
                 audioPlayer.pause();
                 isPlaying = false;
                 stopTimer();
-            }, timeBetween);
+                if (progressBar) progressBar.style.width = '100%';
+                cancelAnimationFrame(rafId);
+            }, duration);
+
             isPlaying = true;
         }
     });
@@ -204,10 +223,27 @@ function listSongsOptions() { /* songs live in PLAYLIST global, no DOM list need
 
 function positionDropdown() {
     const rect = guessInput.getBoundingClientRect();
-    dropdown.style.left   = rect.left + 'px';
-    dropdown.style.width  = rect.width + 'px';
-    dropdown.style.top    = 'auto';
-    dropdown.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
+    // Use visual viewport when available so mobile keyboard is accounted for
+    const vvHeight    = window.visualViewport ? window.visualViewport.height    : window.innerHeight;
+    const vvOffsetTop = window.visualViewport ? window.visualViewport.offsetTop : 0;
+
+    const spaceAbove = rect.top  - vvOffsetTop;
+    const spaceBelow = vvHeight  - (rect.bottom - vvOffsetTop);
+
+    dropdown.style.left = rect.left + 'px';
+    dropdown.style.width = rect.width + 'px';
+
+    if (spaceAbove >= spaceBelow || spaceAbove > 160) {
+        // Position above the input
+        dropdown.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
+        dropdown.style.top    = 'auto';
+        dropdownList.style.maxHeight = Math.min(Math.max(spaceAbove - 16, 80), 320) + 'px';
+    } else {
+        // Position below the input
+        dropdown.style.top    = (rect.bottom + 8) + 'px';
+        dropdown.style.bottom = 'auto';
+        dropdownList.style.maxHeight = Math.min(Math.max(spaceBelow - 16, 80), 320) + 'px';
+    }
 }
 
 function showDropdown(songs, query) {
@@ -314,6 +350,35 @@ window.addEventListener('resize', () => {
     if (!dropdown.classList.contains('hidden')) positionDropdown();
 });
 
+// Reposition dropdown when mobile keyboard opens/closes
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+        if (!dropdown.classList.contains('hidden')) positionDropdown();
+    });
+    window.visualViewport.addEventListener('scroll', () => {
+        if (!dropdown.classList.contains('hidden')) positionDropdown();
+    });
+}
+
+// Help tooltip: click-based toggle for mobile touch support
+const helpBtn = document.getElementById('helpBtn');
+const helpTooltip = document.getElementById('helpTooltip');
+
+if (helpBtn && helpTooltip) {
+    helpBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !helpTooltip.classList.contains('opacity-0');
+        helpTooltip.classList.toggle('opacity-0', isOpen);
+        helpTooltip.classList.toggle('pointer-events-none', isOpen);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!helpBtn.contains(e.target)) {
+            helpTooltip.classList.add('opacity-0', 'pointer-events-none');
+        }
+    });
+}
+
 clearBtn.addEventListener('click', () => {
     guessInput.value = '';
     clearBtn.classList.add('hidden');
@@ -321,6 +386,13 @@ clearBtn.addEventListener('click', () => {
     dropdown.classList.add('hidden');
     guessInput.focus();
 });
+
+function revealAnswer(screenPrefix) {
+    const answer = Answer[0];
+    if (!answer) return;
+    document.getElementById(screenPrefix + 'SongName').textContent   = answer.name;
+    document.getElementById(screenPrefix + 'SongArtist').textContent = answer.artistNames;
+}
 
 function skip() {
     const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
@@ -336,6 +408,7 @@ function skip() {
 
     if (currentGuessBox == 5) {
         document.querySelector(`.guessbox${currentGuessBox}`).classList.remove('active-box');
+        revealAnswer('lose');
         losingpopup.classList.add('open');
     } else {
         advanceActiveBox(currentGuessBox);
@@ -353,6 +426,13 @@ function advanceActiveBox(from) {
 }
 
 function submit(guess) {
+    if (!guess.trim()) {
+        guessInput.classList.add('input-error');
+        guessInput.focus();
+        setTimeout(() => guessInput.classList.remove('input-error'), 350);
+        return;
+    }
+
     const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
     let correctGuess = false;
 
@@ -369,6 +449,7 @@ function submit(guess) {
 
         correctGuess = true;
         document.querySelector(`.guessbox${currentGuessBox}`).classList.remove('active-box');
+        revealAnswer('win');
         popup.classList.add('open');
         confe.classList.add('active');
 
@@ -385,6 +466,7 @@ function submit(guess) {
 
     if (currentGuessBox == 5 && correctGuess == false) {
         document.querySelector(`.guessbox${currentGuessBox}`).classList.remove('active-box');
+        revealAnswer('lose');
         losingpopup.classList.add('open');
     } else if (!correctGuess) {
         advancePlayDuration();

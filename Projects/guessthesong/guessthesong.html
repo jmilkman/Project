@@ -217,15 +217,26 @@
 
     /* Hidden audio player */
     #song-preview audio { display: none; }
+
+    /* Empty guess shake */
+    @keyframes input-shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+    .input-error {
+      animation: input-shake 0.35s ease;
+      border-color: rgba(255, 100, 100, 0.7) !important;
+    }
   </style>
 </head>
-<body class="bg-background text-on-surface font-body neural-mesh flex flex-col overflow-hidden" style="height:100vh;">
+<body class="bg-background text-on-surface font-body neural-mesh flex flex-col overflow-x-hidden" style="min-height:100vh;min-height:100dvh;">
 
   <!-- Nav -->
   <nav class="fixed top-0 w-full z-50 bg-[#0b1326]/80 backdrop-blur-xl border-b border-[#00daf3]/10 shadow-[0_0_20px_rgba(0,229,255,0.05)]">
-    <div class="flex justify-between items-center px-8 py-4 max-w-full mx-auto">
+    <div class="flex justify-between items-center px-4 sm:px-8 py-3 sm:py-4 max-w-full mx-auto">
       <div class="flex items-center gap-4">
-        <a href="../../index.html" class="text-2xl font-bold tracking-tighter text-[#c3f5ff] font-headline hover:text-[#00daf3] transition-colors">Jordan Mielke - Portfolio Website</a>
+        <a href="../../index.html" class="text-sm sm:text-2xl font-bold tracking-tighter text-[#c3f5ff] font-headline hover:text-[#00daf3] transition-colors">Jordan Mielke - Portfolio Website</a>
         <div class="h-6 w-px bg-outline-variant mx-1"></div>
         <span class="text-sm font-medium tracking-widest text-primary-fixed-dim uppercase hidden sm:block">Song Guesser</span>
       </div>
@@ -238,7 +249,7 @@
   </nav>
 
   <!-- Main -->
-  <main class="flex-grow pt-[72px] px-6 flex flex-col items-center justify-center relative overflow-hidden">
+  <main class="flex-grow pt-[72px] px-4 sm:px-6 pb-8 flex flex-col items-center justify-center relative">
 
     <!-- Ambient glows -->
     <div class="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
@@ -247,15 +258,15 @@
     <div class="z-10 w-full max-w-4xl">
 
       <!-- Glass card -->
-      <div class="glass-panel rounded-2xl p-8 md:p-12 neural-glow relative overflow-hidden">
+      <div class="glass-panel rounded-2xl p-5 sm:p-8 md:p-12 neural-glow relative overflow-hidden">
 
         <!-- Top bar -->
         <div class="flex items-center justify-between mb-8 border-b border-outline-variant/30 pb-6">
-          <h2 class="text-on-surface font-headline font-bold text-4xl">Song Guesser</h2>
-          <div class="relative group">
-            <span class="material-symbols-outlined text-outline hover:text-primary transition-colors cursor-default select-none">help</span>
+          <h2 class="text-on-surface font-headline font-bold text-2xl sm:text-4xl">Song Guesser</h2>
+          <div class="relative" id="helpContainer">
+            <span class="material-symbols-outlined text-outline hover:text-primary transition-colors cursor-pointer select-none" id="helpBtn">help</span>
             <!-- Tooltip -->
-            <div class="absolute right-0 top-8 w-64 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+            <div class="absolute right-0 top-8 w-64 pointer-events-none opacity-0 transition-opacity duration-200 z-50" id="helpTooltip">
               <div class="bg-surface-container-highest border border-outline-variant/40 rounded-xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)] text-left">
                 <p class="text-xs font-headline font-bold text-on-surface uppercase tracking-widest mb-3">How to Play</p>
                 <ul class="space-y-2 text-xs text-on-surface-variant leading-relaxed">
@@ -273,7 +284,7 @@
         <div id="song-preview"></div>
 
         <!-- Guess boxes (queue) -->
-        <div class="flex flex-col gap-3 mb-10">
+        <div class="flex flex-col gap-2 sm:gap-3 mb-4 sm:mb-8">
           <div class="guessbox1 active-box"><span class="slot-indicator" data-slot="1"></span><p></p></div>
           <div class="guessbox2"><span class="slot-indicator" data-slot="2"></span><p></p></div>
           <div class="guessbox3"><span class="slot-indicator" data-slot="3"></span><p></p></div>
@@ -282,9 +293,9 @@
         </div>
 
         <!-- Play button + timer -->
-        <div class="flex flex-col items-center mb-10">
+        <div class="flex flex-col items-center mb-3 sm:mb-6">
           <p class="text-xs text-outline tracking-widest uppercase mb-4" id="load-status">Loading song...</p>
-          <div class="flex items-center justify-between w-full max-w-sm mb-6">
+          <div class="flex items-center justify-between w-full max-w-sm mb-4">
             <span class="text-sm font-mono text-primary/80" id="timer">0:00</span>
             <button id="playButton" class="group relative flex items-center justify-center" style="opacity:0.4;">
               <!-- Pulse ring -->
@@ -295,6 +306,10 @@
               </div>
             </button>
             <span class="text-sm font-mono text-primary/80" id="timeleft">0:30</span>
+          </div>
+          <!-- Progress bar -->
+          <div class="w-full max-w-sm h-1 rounded-full overflow-hidden" style="background:rgba(59,73,76,0.35);">
+            <div id="progressBar" class="h-full rounded-full" style="width:0%;background:#00daf3;transition:none;"></div>
           </div>
         </div>
 
@@ -336,7 +351,7 @@
 
   <!-- Search dropdown (fixed to escape overflow-hidden parents) -->
   <div id="songDropdown" class="hidden fixed z-[200] rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.6)]" style="background:rgba(13,21,40,0.98);border:1px solid rgba(59,73,76,0.5);backdrop-filter:blur(24px);">
-    <div id="songDropdownList" class="max-h-80 overflow-y-auto custom-scroll"></div>
+    <div id="songDropdownList" class="overflow-y-auto custom-scroll"></div>
   </div>
 
   <!-- Win screen -->
@@ -344,7 +359,12 @@
     <div class="winningScreen-inner">
       <div class="text-4xl mb-4">🎉</div>
       <h2 class="text-2xl font-headline font-bold text-on-surface mb-2">You got it!</h2>
-      <p class="text-on-surface-variant text-sm mb-8">Nice ear. You identified the song.</p>
+      <p class="text-on-surface-variant text-sm mb-6">Nice ear. You identified the song.</p>
+      <div class="bg-surface-container rounded-xl px-5 py-4 mb-8 border border-outline-variant/30 text-center">
+        <p class="text-xs text-outline uppercase tracking-widest mb-1">The song was</p>
+        <p id="winSongName" class="text-on-surface font-headline font-bold text-lg leading-tight"></p>
+        <p id="winSongArtist" class="text-primary-fixed-dim text-sm mt-0.5"></p>
+      </div>
       <button class="playAgain w-full py-4 rounded-lg bg-white text-background font-headline font-bold uppercase tracking-widest text-sm hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] transition-all">
         Play Again
       </button>
@@ -356,7 +376,12 @@
     <div class="losingScreen-inner">
       <div class="text-4xl mb-4">😔</div>
       <h2 class="text-2xl font-headline font-bold text-on-surface mb-2">Better luck next time</h2>
-      <p class="text-on-surface-variant text-sm mb-8">You used all 5 attempts.</p>
+      <p class="text-on-surface-variant text-sm mb-6">You used all 5 attempts.</p>
+      <div class="bg-surface-container rounded-xl px-5 py-4 mb-8 border border-outline-variant/30 text-center">
+        <p class="text-xs text-outline uppercase tracking-widest mb-1">The song was</p>
+        <p id="loseSongName" class="text-on-surface font-headline font-bold text-lg leading-tight"></p>
+        <p id="loseSongArtist" class="text-primary-fixed-dim text-sm mt-0.5"></p>
+      </div>
       <button class="playAgain w-full py-4 rounded-lg bg-surface-container-high border border-outline-variant/30 text-on-surface font-headline font-bold uppercase tracking-widest text-sm hover:bg-surface-variant transition-all">
         Try Again
       </button>
