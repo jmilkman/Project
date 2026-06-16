@@ -340,6 +340,7 @@ clearBtn.addEventListener('click', () => {
 // ─── Game logic ───────────────────────────────────────────────────────────────
 
 let currentGuessBox = 1;
+let skipping = false;
 
 function revealAnswer(songName, artistName, screenPrefix) {
     document.getElementById(screenPrefix + 'SongName').textContent   = songName;
@@ -354,29 +355,36 @@ function advanceActiveBox(from) {
 }
 
 async function skip() {
-    if (!gameId) return;
+    if (!gameId || skipping || currentGuessBox > 5) return;
+    skipping = true;
 
-    const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
-    guessBox.textContent = 'Skipped';
-    guessBox.classList.add('incorrect');
-    const iconSpan = document.createElement('span');
-    iconSpan.classList.add('fa', 'fa-x');
-    guessBox.insertBefore(iconSpan, guessBox.firstChild);
+    try {
+        const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
+        if (!guessBox) return;
 
-    if (currentGuessBox === 5) {
-        document.querySelector('.guessbox5').classList.remove('active-box');
-        try {
-            const res  = await fetch(`${API}/game/${gameId}/skip`, { method: 'POST' });
-            const data = await res.json();
-            revealAnswer(data.songName || '?', data.artistName || '?', 'lose');
-        } catch {
-            revealAnswer('Unknown', 'Unknown', 'lose');
+        guessBox.textContent = 'Skipped';
+        guessBox.classList.add('incorrect');
+        const iconSpan = document.createElement('span');
+        iconSpan.classList.add('fa', 'fa-x');
+        guessBox.insertBefore(iconSpan, guessBox.firstChild);
+
+        if (currentGuessBox === 5) {
+            document.querySelector('.guessbox5').classList.remove('active-box');
+            try {
+                const res  = await fetch(`${API}/game/${gameId}/skip`, { method: 'POST' });
+                const data = await res.json();
+                revealAnswer(data.songName || '?', data.artistName || '?', 'lose');
+            } catch {
+                revealAnswer('Unknown', 'Unknown', 'lose');
+            }
+            losingpopup.classList.add('open');
+        } else {
+            await fetch(`${API}/game/${gameId}/skip`, { method: 'POST' }).catch(() => {});
+            advanceActiveBox(currentGuessBox);
+            currentGuessBox++;
         }
-        losingpopup.classList.add('open');
-    } else {
-        await fetch(`${API}/game/${gameId}/skip`, { method: 'POST' }).catch(() => {});
-        advanceActiveBox(currentGuessBox);
-        currentGuessBox++;
+    } finally {
+        skipping = false;
     }
 }
 
