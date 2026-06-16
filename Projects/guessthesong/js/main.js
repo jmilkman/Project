@@ -529,10 +529,10 @@ async function openLeaderboard() {
                 <tbody>
                     ${data.entries.map((e, i) => `
                         <tr style="border-bottom:1px solid rgba(59,73,76,0.2);color:${i === 0 ? '#00daf3' : '#bac9cc'};">
-                            <td style="padding:12px 12px 12px 0;font-weight:700;">${i + 1}</td>
-                            <td style="padding:12px 12px 12px 0;font-weight:500;">${escHtml(e.username)}</td>
-                            <td style="padding:12px 12px 12px 24px;font-size:0.75rem;opacity:0.7;">${escHtml(e.song_name)}</td>
-                            <td style="padding:12px 0;text-align:right;font-weight:700;font-family:monospace;">${e.score}</td>
+                            <td style="text-align:left;padding:12px 12px 12px 0;font-weight:700;">${i + 1}</td>
+                            <td style="text-align:left;padding:12px 12px 12px 0;font-weight:500;">${escHtml(e.username)}</td>
+                            <td style="text-align:left;padding:12px 12px 12px 24px;font-size:0.75rem;opacity:0.7;">${escHtml(e.song_name)}</td>
+                            <td style="text-align:right;padding:12px 0;font-weight:700;font-family:monospace;">${e.score}</td>
                         </tr>
                     `).join('')}
                 </tbody>
