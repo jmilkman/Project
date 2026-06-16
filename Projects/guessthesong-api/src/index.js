@@ -4,7 +4,7 @@ import { PLAYLIST } from './playlist.js';
 const DURATIONS = [1, 3, 8, 17, 30]; // seconds per attempt index (0–4)
 
 const CORS = {
-    'Access-Control-Allow-Origin': 'https://jmielke.github.io',
+    'Access-Control-Allow-Origin': 'https://jmilkman.github.io',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
 };
@@ -48,33 +48,23 @@ export default {
             const itunesUrl = PREVIEWS[session.songKey];
             if (!itunesUrl) return json({ error: 'No preview available for this song' }, 404);
 
-            const allowedBytes = DURATIONS[session.attempt] * 16000; // ~128kbps AAC estimate
+            // Forward Range header so the browser can seek within the clip
+            const rangeHeader = request.headers.get('Range');
+            const upstream = await fetch(itunesUrl, {
+                headers: rangeHeader ? { 'Range': rangeHeader } : {},
+            });
+            if (!upstream.ok && upstream.status !== 206) {
+                return json({ error: 'Upstream audio unavailable' }, 502);
+            }
 
-            const upstream = await fetch(itunesUrl);
-            if (!upstream.ok) return json({ error: 'Upstream audio unavailable' }, 502);
-
-            const { readable, writable } = new TransformStream();
-            const writer = writable.getWriter();
-
-            // Stream only the allowed bytes, then close
-            (async () => {
-                let sent = 0;
-                try {
-                    for await (const chunk of upstream.body) {
-                        if (sent >= allowedBytes) break;
-                        const slice = chunk.slice(0, allowedBytes - sent);
-                        await writer.write(slice);
-                        sent += slice.length;
-                    }
-                } finally {
-                    await writer.close();
-                }
-            })();
-
-            return new Response(readable, {
+            return new Response(upstream.body, {
+                status: upstream.status,
                 headers: {
                     ...CORS,
-                    'Content-Type': 'audio/mp4',
+                    'Content-Type': upstream.headers.get('Content-Type') || 'audio/mp4',
+                    'Content-Length': upstream.headers.get('Content-Length') || '',
+                    'Content-Range': upstream.headers.get('Content-Range') || '',
+                    'Accept-Ranges': 'bytes',
                     'Cache-Control': 'no-store',
                 },
             });

@@ -144,8 +144,9 @@ function addPlayPauseEventListener(audioPlayer) {
         }
         rafId = requestAnimationFrame(updateProgress);
 
-        // Fallback: fill bar and stop timer if stream doesn't fire 'ended' cleanly
+        // Pause audio and fill bar after the allowed duration
         progressTimer = setTimeout(() => {
+            audioPlayer.pause();
             if (progressBar) progressBar.style.width = '100%';
             cancelAnimationFrame(rafId);
             stopTimer();
@@ -373,7 +374,7 @@ async function skip() {
         }
         losingpopup.classList.add('open');
     } else {
-        fetch(`${API}/game/${gameId}/skip`, { method: 'POST' }).catch(() => {});
+        await fetch(`${API}/game/${gameId}/skip`, { method: 'POST' }).catch(() => {});
         advanceActiveBox(currentGuessBox);
         currentGuessBox++;
     }
