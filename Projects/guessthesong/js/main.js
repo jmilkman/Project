@@ -10,8 +10,8 @@ const submitButton = document.getElementById('submitButton');
 const timerDisplay = document.getElementById('timer');
 const confe = document.querySelector('#my-canvas');
 
-const popup      = document.querySelector('.winningScreen');
-const losingpopup = document.querySelector('.losingScreen');
+const popup      = document.getElementById('winningScreen');
+const losingpopup = document.getElementById('losingScreen');
 let timerInterval;
 
 let gameId        = null;
