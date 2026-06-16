@@ -263,6 +263,8 @@
         <!-- Top bar -->
         <div class="flex items-center justify-between mb-8 border-b border-outline-variant/30 pb-6">
           <h2 class="text-on-surface font-headline font-bold text-2xl sm:text-4xl">Song Guesser</h2>
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-outline hover:text-primary transition-colors cursor-pointer select-none" id="leaderboardBtn" title="Leaderboard">leaderboard</span>
           <div class="relative" id="helpContainer">
             <span class="material-symbols-outlined text-outline hover:text-primary transition-colors cursor-pointer select-none" id="helpBtn">help</span>
             <!-- Tooltip -->
@@ -277,6 +279,7 @@
                 </ul>
               </div>
             </div>
+          </div>
           </div>
         </div>
 
@@ -352,6 +355,19 @@
   <!-- Search dropdown (fixed to escape overflow-hidden parents) -->
   <div id="songDropdown" class="hidden fixed z-[200] rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.6)]" style="background:rgba(13,21,40,0.98);border:1px solid rgba(59,73,76,0.5);backdrop-filter:blur(24px);">
     <div id="songDropdownList" class="overflow-y-auto custom-scroll"></div>
+  </div>
+
+  <!-- Leaderboard modal -->
+  <div class="winningScreen" id="leaderboardModal">
+    <div class="winningScreen-inner" style="max-width:480px;">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-headline font-bold text-on-surface">Leaderboard</h2>
+        <span class="material-symbols-outlined text-outline hover:text-on-surface cursor-pointer transition-colors" id="leaderboardClose">close</span>
+      </div>
+      <div id="leaderboardContent">
+        <p class="text-outline text-sm text-center py-4">Loading...</p>
+      </div>
+    </div>
   </div>
 
   <!-- Win screen -->

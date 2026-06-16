@@ -470,4 +470,54 @@ async function submit(guess) {
     document.getElementById('guess').value = '';
 }
 
+// ─── Leaderboard modal ────────────────────────────────────────────────────────
+
+const leaderboardModal = document.getElementById('leaderboardModal');
+const leaderboardContent = document.getElementById('leaderboardContent');
+
+document.getElementById('leaderboardBtn').addEventListener('click', openLeaderboard);
+document.getElementById('leaderboardClose').addEventListener('click', () => {
+    leaderboardModal.classList.remove('open');
+});
+
+async function openLeaderboard() {
+    leaderboardModal.classList.add('open');
+    leaderboardContent.innerHTML = '<p class="text-outline text-sm text-center py-4">Loading...</p>';
+    try {
+        const res = await fetch(`${API}/leaderboard`);
+        const data = await res.json();
+        if (!data.entries || data.entries.length === 0) {
+            leaderboardContent.innerHTML = '<p class="text-outline text-sm text-center py-4">No scores yet — be the first!</p>';
+            return;
+        }
+        leaderboardContent.innerHTML = `
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-outline text-xs uppercase tracking-widest border-b border-outline-variant/30">
+                        <th class="text-left pb-3 font-medium">#</th>
+                        <th class="text-left pb-3 font-medium">Player</th>
+                        <th class="text-left pb-3 font-medium">Song</th>
+                        <th class="text-right pb-3 font-medium">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.entries.map((e, i) => `
+                        <tr class="border-b border-outline-variant/20 ${i === 0 ? 'text-[#00daf3]' : 'text-on-surface-variant'}">
+                            <td class="py-3 pr-3 font-bold">${i + 1}</td>
+                            <td class="py-3 pr-3 font-medium">${escHtml(e.username)}</td>
+                            <td class="py-3 pr-3 text-xs opacity-70">${escHtml(e.song_name)}</td>
+                            <td class="py-3 text-right font-bold font-mono">${e.score}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>`;
+    } catch {
+        leaderboardContent.innerHTML = '<p class="text-outline text-sm text-center py-4">Failed to load leaderboard.</p>';
+    }
+}
+
+function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 window.onload = startGame;
