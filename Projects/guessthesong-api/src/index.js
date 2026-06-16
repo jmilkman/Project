@@ -123,10 +123,14 @@ export default {
 
         // GET /leaderboard — top 10 scores
         if (path === '/leaderboard' && request.method === 'GET') {
-            const result = await env.DB.prepare(
-                'SELECT username, score, song_name, artist_name, attempts, time_ms FROM leaderboard ORDER BY score DESC, created_at ASC LIMIT 10'
-            ).all();
-            return json({ entries: result.results });
+            try {
+                const result = await env.DB.prepare(
+                    'SELECT username, score, song_name, artist_name, attempts, time_ms FROM leaderboard ORDER BY score DESC, created_at ASC LIMIT 10'
+                ).all();
+                return json({ entries: result.results });
+            } catch (e) {
+                return json({ error: String(e), entries: [] }, 500);
+            }
         }
 
         // POST /leaderboard — submit a score
