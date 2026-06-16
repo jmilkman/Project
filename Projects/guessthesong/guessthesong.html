@@ -383,10 +383,12 @@
       </div>
       <p id="winScore" class="text-[#00daf3] font-headline font-bold text-xl mb-4"></p>
       <div class="flex gap-2 mb-4">
-        <input id="leaderboardUsername" type="text" maxlength="24" placeholder="Your name for leaderboard"
-          class="flex-1 bg-surface-container border border-outline-variant/30 rounded-lg py-3 px-4 text-on-surface placeholder:text-outline/50 outline-none font-medium focus:border-[#00daf3] transition-colors" />
+        <input id="leaderboardUsername" type="text" maxlength="24" placeholder="Username"
+          style="min-width:0;flex:1 1 0%;"
+          class="bg-surface-container border border-outline-variant/30 rounded-lg py-3 px-4 text-on-surface placeholder:text-outline/50 outline-none font-medium focus:border-[#00daf3] transition-colors" />
         <button id="leaderboardSubmitBtn"
-          class="shrink-0 min-w-[7rem] whitespace-nowrap px-4 py-3 rounded-lg bg-[#00daf3] text-background font-headline font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40">
+          style="flex-shrink:0;width:8rem;white-space:nowrap;"
+          class="py-3 rounded-lg bg-[#00daf3] text-background font-headline font-bold text-sm text-center hover:opacity-90 transition-opacity disabled:opacity-40">
           Submit
         </button>
       </div>
