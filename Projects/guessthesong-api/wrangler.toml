@@ -1,0 +1,12 @@
+name = "guessthesong-api"
+main = "src/index.js"
+compatibility_date = "2024-09-01"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "97afd915eccc452c97578646a0943eab"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "guessthesong-db"
+database_id = "6627f214-7575-414b-9818-d85636d6ba57"
