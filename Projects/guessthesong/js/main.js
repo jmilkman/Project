@@ -516,27 +516,25 @@ async function openLeaderboard() {
             leaderboardContent.innerHTML = '<p class="text-outline text-sm text-center py-4">No scores yet — be the first!</p>';
             return;
         }
+        const hdr = 'padding:0 0 10px 0;font-size:0.65rem;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#849396;';
         leaderboardContent.innerHTML = `
-            <table class="w-full text-sm" style="border-collapse:collapse;">
-                <thead>
-                    <tr class="text-outline text-xs uppercase tracking-widest border-b border-outline-variant/30">
-                        <th style="text-align:left;padding:0 12px 12px 0;font-weight:500;">#</th>
-                        <th style="text-align:left;padding:0 12px 12px 0;font-weight:500;">Player</th>
-                        <th style="text-align:left;padding:0 12px 12px 24px;font-weight:500;">Song</th>
-                        <th style="text-align:right;padding:0 0 12px 0;font-weight:500;">Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${data.entries.map((e, i) => `
-                        <tr style="border-bottom:1px solid rgba(59,73,76,0.2);color:${i === 0 ? '#00daf3' : '#bac9cc'};">
-                            <td style="text-align:left;padding:12px 12px 12px 0;font-weight:700;">${i + 1}</td>
-                            <td style="text-align:left;padding:12px 12px 12px 0;font-weight:500;">${escHtml(e.username)}</td>
-                            <td style="text-align:left;padding:12px 12px 12px 24px;font-size:0.75rem;opacity:0.7;">${escHtml(e.song_name)}</td>
-                            <td style="text-align:right;padding:12px 0;font-weight:700;font-family:monospace;">${e.score}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>`;
+            <div style="display:grid;grid-template-columns:2rem 1fr 1.5fr 3.5rem;text-align:left;">
+                <span style="${hdr}">#</span>
+                <span style="${hdr}">Player</span>
+                <span style="${hdr}padding-left:12px;">Song</span>
+                <span style="${hdr}text-align:right;">Score</span>
+                <div style="grid-column:1/-1;border-bottom:1px solid rgba(59,73,76,0.35);margin-bottom:0;"></div>
+                ${data.entries.map((e, i) => {
+                    const c = i === 0 ? '#00daf3' : '#bac9cc';
+                    const b = `color:${c};border-bottom:1px solid rgba(59,73,76,0.2);padding:10px 0;`;
+                    return `
+                        <span style="${b}font-weight:700;">${i + 1}</span>
+                        <span style="${b}padding-right:8px;">${escHtml(e.username)}</span>
+                        <span style="${b}padding-left:12px;font-size:0.75rem;opacity:0.7;">${escHtml(e.song_name)}</span>
+                        <span style="${b}text-align:right;font-family:monospace;font-weight:700;">${e.score}</span>
+                    `;
+                }).join('')}
+            </div>`;
     } catch {
         leaderboardContent.innerHTML = '<p class="text-outline text-sm text-center py-4">Failed to load leaderboard.</p>';
     }
