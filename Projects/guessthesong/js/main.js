@@ -517,22 +517,22 @@ async function openLeaderboard() {
             return;
         }
         leaderboardContent.innerHTML = `
-            <table class="w-full text-sm">
+            <table class="w-full text-sm" style="border-collapse:collapse;">
                 <thead>
                     <tr class="text-outline text-xs uppercase tracking-widest border-b border-outline-variant/30">
-                        <th class="text-left pb-3 font-medium">#</th>
-                        <th class="text-left pb-3 font-medium">Player</th>
-                        <th class="text-left pb-3 font-medium">Song</th>
-                        <th class="text-right pb-3 font-medium">Score</th>
+                        <th style="text-align:left;padding:0 12px 12px 0;font-weight:500;">#</th>
+                        <th style="text-align:left;padding:0 12px 12px 0;font-weight:500;">Player</th>
+                        <th style="text-align:left;padding:0 12px 12px 24px;font-weight:500;">Song</th>
+                        <th style="text-align:right;padding:0 0 12px 0;font-weight:500;">Score</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${data.entries.map((e, i) => `
-                        <tr class="border-b border-outline-variant/20 ${i === 0 ? 'text-[#00daf3]' : 'text-on-surface-variant'}">
-                            <td class="py-3 pr-3 font-bold">${i + 1}</td>
-                            <td class="py-3 pr-3 font-medium">${escHtml(e.username)}</td>
-                            <td class="py-3 pr-3 text-xs opacity-70">${escHtml(e.song_name)}</td>
-                            <td class="py-3 text-right font-bold font-mono">${e.score}</td>
+                        <tr style="border-bottom:1px solid rgba(59,73,76,0.2);color:${i === 0 ? '#00daf3' : '#bac9cc'};">
+                            <td style="padding:12px 12px 12px 0;font-weight:700;">${i + 1}</td>
+                            <td style="padding:12px 12px 12px 0;font-weight:500;">${escHtml(e.username)}</td>
+                            <td style="padding:12px 12px 12px 24px;font-size:0.75rem;opacity:0.7;">${escHtml(e.song_name)}</td>
+                            <td style="padding:12px 0;text-align:right;font-weight:700;font-family:monospace;">${e.score}</td>
                         </tr>
                     `).join('')}
                 </tbody>
