@@ -359,17 +359,17 @@ async function skip() {
     skipping = true;
 
     try {
-        const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
-        if (!guessBox) return;
-
-        guessBox.textContent = 'Skipped';
-        guessBox.classList.add('incorrect');
-        const iconSpan = document.createElement('span');
-        iconSpan.classList.add('fa', 'fa-x');
-        guessBox.insertBefore(iconSpan, guessBox.firstChild);
-
         if (currentGuessBox === 5) {
+            const guessBox = document.querySelector('.guessbox5 p');
+            if (!guessBox) return;
+
+            guessBox.textContent = 'Skipped';
+            guessBox.classList.add('incorrect');
+            const iconSpan = document.createElement('span');
+            iconSpan.classList.add('fa', 'fa-x');
+            guessBox.insertBefore(iconSpan, guessBox.firstChild);
             document.querySelector('.guessbox5').classList.remove('active-box');
+
             try {
                 const res  = await fetch(`${API}/game/${gameId}/skip`, { method: 'POST' });
                 const data = await res.json();
@@ -379,7 +379,24 @@ async function skip() {
             }
             losingpopup.classList.add('open');
         } else {
-            await fetch(`${API}/game/${gameId}/skip`, { method: 'POST' }).catch(() => {});
+            // Fetch first — only mark the box and advance if the server confirmed
+            let data;
+            try {
+                const res = await fetch(`${API}/game/${gameId}/skip`, { method: 'POST' });
+                data = await res.json();
+            } catch {
+                return; // network error — leave the box unchanged so the user can retry
+            }
+
+            const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
+            if (!guessBox) return;
+
+            guessBox.textContent = 'Skipped';
+            guessBox.classList.add('incorrect');
+            const iconSpan = document.createElement('span');
+            iconSpan.classList.add('fa', 'fa-x');
+            guessBox.insertBefore(iconSpan, guessBox.firstChild);
+
             advanceActiveBox(currentGuessBox);
             currentGuessBox++;
         }
