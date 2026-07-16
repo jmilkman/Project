@@ -22,6 +22,11 @@ export default {
         const url = new URL(request.url);
         const path = url.pathname;
 
+        // GET /playlist — full song list, for the frontend's guess autocomplete
+        if (path === '/playlist' && request.method === 'GET') {
+            return json(PLAYLIST);
+        }
+
         // POST /game/start — pick a random song, store session in KV
         if (path === '/game/start' && request.method === 'POST') {
             const available = PLAYLIST.filter(s => PREVIEWS[`${s.name}::${s.artistNames}`]);

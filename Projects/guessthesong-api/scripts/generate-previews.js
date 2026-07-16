@@ -1,8 +1,8 @@
 // generate-previews.js
-// Run once (and again whenever you add songs to playlist.js):
+// Run once (and again whenever you add songs to src/playlist.js):
 //
 //   export SPOTIFY_CLIENT_ID=xxx SPOTIFY_CLIENT_SECRET=yyy
-//   node generate-previews.js
+//   npm run generate-previews
 //
 // Requires Node.js 18+ (for built-in fetch) and a Spotify Developer app
 // (https://developer.spotify.com/dashboard) for the Client ID/Secret above.
@@ -13,13 +13,16 @@
 // undocumented and could change without notice; failures there just mean "no
 // preview" for that song rather than crashing the run.
 //
-// Writes previews.json into the same directory.
+// Writes src/previews.json, which the Worker deploys alongside src/index.js.
 
 const fs   = require('fs');
 const path = require('path');
 
-// Load PLAYLIST from playlist.js
-eval(fs.readFileSync(path.join(__dirname, 'playlist.js'), 'utf8'));
+const SRC_DIR = path.join(__dirname, '..', 'src');
+
+// Load PLAYLIST from playlist.js (strip the ESM "export" the Worker needs so
+// eval can define it as a plain local instead)
+eval(fs.readFileSync(path.join(SRC_DIR, 'playlist.js'), 'utf8').replace(/^export\s+/, ''));
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -31,7 +34,7 @@ if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
         'Missing SPOTIFY_CLIENT_ID / SPOTIFY_CLIENT_SECRET env vars.\n' +
         'Export them before running, e.g.:\n' +
         '  export SPOTIFY_CLIENT_ID=xxx SPOTIFY_CLIENT_SECRET=yyy\n' +
-        '  node generate-previews.js'
+        '  npm run generate-previews'
     );
     process.exit(1);
 }
@@ -132,7 +135,7 @@ async function fetchSpotifyPreviewUrl(name, artistNames) {
         process.exit(1);
     }
 
-    const outPath = path.join(__dirname, 'previews.json');
+    const outPath = path.join(SRC_DIR, 'previews.json');
 
     // Load existing previews. Only Spotify-sourced entries (p.scdn.co) count as
     // already done — stale iTunes entries from before this switch are dropped
