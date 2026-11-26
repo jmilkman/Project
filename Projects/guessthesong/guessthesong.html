@@ -2,12 +2,12 @@
 <html class="dark overflow-x-hidden" lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+  <meta name="theme-color" content="#0b1326"/>
   <title>Guess The Song — Jordan Mielke</title>
   <link rel="icon" type="image/svg+xml" href="../../favicon.svg"/>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script>
     tailwind.config = {
@@ -74,168 +74,204 @@
   </nav>
 
   <!-- Main -->
-  <main class="flex-grow pt-[72px] px-4 sm:px-6 pb-8 flex flex-col items-center justify-center relative">
+  <main class="flex-grow pt-[60px] sm:pt-[76px] px-3 sm:px-6 pb-6 sm:pb-8 flex flex-col items-center justify-center relative">
 
     <!-- Ambient glows -->
-    <div class="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
-    <div class="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-secondary/5 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="absolute top-1/4 -left-20 w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="absolute bottom-1/4 -right-20 w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] bg-secondary/5 blur-[120px] rounded-full pointer-events-none"></div>
 
-    <div class="z-10 w-full max-w-4xl">
+    <div class="z-10 w-full max-w-2xl">
 
       <!-- Glass card -->
-      <div class="glass-panel rounded-2xl p-5 sm:p-8 md:p-12 neural-glow relative overflow-hidden">
+      <div class="glass-panel rounded-2xl p-4 sm:p-8 md:p-10 neural-glow relative">
 
         <!-- Top bar -->
-        <div class="flex items-center justify-between mb-8 border-b border-outline-variant/30 pb-6">
-          <h2 class="text-on-surface font-headline font-bold text-2xl sm:text-4xl">Song Guesser</h2>
-          <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined leading-none text-outline hover:text-primary transition-colors cursor-pointer select-none" id="leaderboardBtn" title="Leaderboard">leaderboard</span>
-          <div class="relative flex items-center" id="helpContainer">
-            <span class="material-symbols-outlined leading-none text-outline hover:text-primary transition-colors cursor-pointer select-none" id="helpBtn">help</span>
-            <!-- Tooltip -->
-            <div class="absolute right-0 top-8 w-64 pointer-events-none opacity-0 transition-opacity duration-200 z-50" id="helpTooltip">
-              <div class="bg-surface-container-highest border border-outline-variant/40 rounded-xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)] text-left">
-                <p class="text-xs font-headline font-bold text-on-surface uppercase tracking-widest mb-3">How to Play</p>
-                <ul class="space-y-2 text-xs text-on-surface-variant leading-relaxed">
-                  <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> Press play to hear a short clip</li>
-                  <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> Type a guess and hit Submit</li>
-                  <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> Skip to reveal more of the song</li>
-                  <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> You get 5 attempts — good luck!</li>
-                </ul>
+        <div class="flex items-center justify-between mb-4 sm:mb-8 border-b border-outline-variant/30 pb-3 sm:pb-6">
+          <h1 class="text-on-surface font-headline font-bold text-2xl sm:text-4xl">Song Guesser</h1>
+          <div class="flex items-center gap-1">
+            <button type="button" class="icon-btn openLeaderboard" id="leaderboardBtn" aria-label="Leaderboard" title="Leaderboard">
+              <span class="material-symbols-outlined">leaderboard</span>
+            </button>
+            <div class="relative flex items-center" id="helpContainer">
+              <button type="button" class="icon-btn" id="helpBtn" aria-label="How to play" aria-expanded="false" aria-controls="helpTooltip" title="How to play">
+                <span class="material-symbols-outlined">help</span>
+              </button>
+              <!-- Tooltip -->
+              <div class="absolute right-0 top-11 w-64 max-w-[calc(100vw-2.5rem)] pointer-events-none opacity-0 transition-opacity duration-200 z-50" id="helpTooltip" role="dialog" aria-label="How to play">
+                <div class="bg-surface-container-highest border border-outline-variant/40 rounded-xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)] text-left">
+                  <p class="text-xs font-headline font-bold text-on-surface uppercase tracking-widest mb-3">How to Play</p>
+                  <ul class="space-y-2 text-xs text-on-surface-variant leading-relaxed">
+                    <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> Press play to hear the opening second</li>
+                    <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> Search for the song and hit Submit</li>
+                    <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> Wrong guesses and skips unlock more: 1s → 3s → 8s → 17s → 30s</li>
+                    <li class="flex gap-2"><span class="text-primary-fixed-dim">▸</span> Fewer attempts and less time = higher score</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
-          </div>
         </div>
-
-        <!-- Hidden audio container -->
-        <div id="song-preview"></div>
 
         <!-- Guess boxes (queue) -->
-        <div class="flex flex-col gap-2 sm:gap-3 mb-4 sm:mb-8">
-          <div class="guessbox1 active-box"><span class="slot-indicator" data-slot="1"></span><p></p></div>
-          <div class="guessbox2"><span class="slot-indicator" data-slot="2"></span><p></p></div>
-          <div class="guessbox3"><span class="slot-indicator" data-slot="3"></span><p></p></div>
-          <div class="guessbox4"><span class="slot-indicator" data-slot="4"></span><p></p></div>
-          <div class="guessbox5"><span class="slot-indicator" data-slot="5"></span><p></p></div>
+        <div class="flex flex-col gap-1.5 sm:gap-3 mb-4 sm:mb-8" aria-label="Your guesses">
+          <div class="guessbox guessbox1 active-box"><span class="slot-indicator"></span><p></p></div>
+          <div class="guessbox guessbox2"><span class="slot-indicator"></span><p></p></div>
+          <div class="guessbox guessbox3"><span class="slot-indicator"></span><p></p></div>
+          <div class="guessbox guessbox4"><span class="slot-indicator"></span><p></p></div>
+          <div class="guessbox guessbox5"><span class="slot-indicator"></span><p></p></div>
         </div>
 
-        <!-- Play button + timer -->
-        <div class="flex flex-col items-center mb-3 sm:mb-6">
-          <p class="text-xs text-outline tracking-widest uppercase mb-4" id="load-status">Loading song...</p>
-          <div class="flex items-center justify-between w-full max-w-sm mb-4">
-            <span class="text-sm font-mono text-primary/80" id="timer">0:00</span>
-            <button id="playButton" class="group relative flex items-center justify-center" style="opacity:0.4;">
+        <!-- Play button + clip timeline -->
+        <div class="flex flex-col items-center mb-4 sm:mb-6">
+          <div class="flex items-center justify-between w-full max-w-sm mb-3">
+            <span class="text-sm font-mono text-primary/80 w-12" id="timer">0:00</span>
+            <button type="button" id="playButton" class="play-btn group relative flex items-center justify-center" aria-label="Play clip" disabled>
               <!-- Pulse ring -->
               <div class="pulse-ring absolute w-24 h-24 rounded-full bg-[#00daf3]/20 opacity-0"></div>
               <!-- Button -->
-              <div class="relative w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:scale-105 active:scale-95 transition-transform">
-                <span class="material-symbols-outlined text-background text-5xl translate-x-0.5" style="font-variation-settings:'FILL' 1;">play_arrow</span>
+              <div class="play-face relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.15)] transition-transform">
+                <span id="playIcon" class="material-symbols-outlined text-background text-4xl sm:text-5xl" style="font-variation-settings:'FILL' 1;">play_arrow</span>
               </div>
             </button>
-            <span class="text-sm font-mono text-primary/80" id="timeleft">0:30</span>
+            <span class="text-sm font-mono text-primary/80 w-12 text-right" id="timeleft" title="Unlocked clip length">0:01</span>
           </div>
-          <!-- Progress bar -->
-          <div class="w-full max-w-sm h-1 rounded-full overflow-hidden" style="background:rgba(59,73,76,0.35);">
-            <div id="progressBar" class="h-full rounded-full" style="width:0%;background:#00daf3;transition:none;"></div>
+          <!-- Timeline: full 30s preview, shaded to the unlocked length, with markers at each unlock -->
+          <div class="clip-track w-full max-w-sm" aria-hidden="true">
+            <div id="unlockedBar" class="clip-unlocked"></div>
+            <div id="progressBar" class="clip-progress"></div>
+            <div id="clipMarkers"></div>
           </div>
+          <p class="text-xs text-outline tracking-wide mt-3 min-h-[1rem] text-center" id="load-status" role="status" aria-live="polite">Loading song…</p>
         </div>
 
-        <!-- Search input -->
-        <div class="mb-6 relative">
-          <div class="relative">
-            <div class="absolute left-5 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-              <span class="material-symbols-outlined transition-colors duration-200" id="searchIcon" style="color:#849396;">search</span>
+        <div id="gameControls">
+          <!-- Search input -->
+          <div class="mb-3 sm:mb-5 relative">
+            <div class="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+              <span class="material-symbols-outlined transition-colors duration-200" id="searchIcon">search</span>
             </div>
             <input
               id="guess"
               type="text"
               autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
               spellcheck="false"
-              placeholder="Search for the artist or title..."
-              class="w-full bg-surface-container-lowest border-2 border-outline-variant/30 rounded-lg py-4 pl-14 pr-10 text-on-surface placeholder:text-outline/50 focus:ring-0 focus:border-primary-fixed-dim transition-all outline-none font-medium"
+              enterkeyhint="send"
+              maxlength="200"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded="false"
+              aria-controls="songDropdownList"
+              aria-label="Your guess"
+              placeholder="Search by title or artist…"
+              class="w-full bg-surface-container-lowest border-2 border-outline-variant/30 rounded-lg py-3.5 sm:py-4 pl-12 sm:pl-14 pr-12 text-base text-on-surface placeholder:text-outline/50 focus:ring-0 focus:border-primary-fixed-dim transition-all outline-none font-medium"
             />
-            <button id="clearGuess" class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors hidden">
+            <button type="button" id="clearGuess" aria-label="Clear guess" class="icon-btn absolute right-1.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface hidden">
               <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+
+            <!-- Search dropdown (opens upward, above the input) -->
+            <div id="songDropdown" class="hidden absolute left-0 right-0 bottom-full mb-2 z-[60] rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.6)] overflow-hidden">
+              <div id="songDropdownList" class="overflow-y-auto overscroll-contain custom-scroll" role="listbox" aria-label="Matching songs"></div>
+            </div>
+          </div>
+
+          <!-- Skip / Submit -->
+          <div class="grid grid-cols-2 gap-3 sm:gap-4">
+            <button type="button" id="skipButton"
+              class="game-btn py-3.5 sm:py-4 rounded-lg bg-surface-container-high text-on-surface font-headline font-bold uppercase tracking-widest text-sm border border-outline-variant/30 hover:bg-surface-variant hover:border-outline-variant/60 transition-all active:scale-[0.98]">
+              Skip
+            </button>
+            <button type="button" id="submitButton"
+              class="game-btn py-3.5 sm:py-4 rounded-lg bg-white text-background font-headline font-bold uppercase tracking-widest text-sm hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] transition-all active:scale-[0.98]">
+              Submit
             </button>
           </div>
         </div>
 
-        <!-- Skip / Submit -->
-        <div class="grid grid-cols-2 gap-4">
-          <button id="skipButton" onclick="skip()"
-            class="py-4 rounded-lg bg-surface-container-high text-on-surface font-headline font-bold uppercase tracking-widest text-sm border border-outline-variant/30 hover:bg-surface-variant hover:border-outline-variant/60 transition-all active:scale-[0.98]">
-            SKIP
-          </button>
-          <button id="submitButton" onclick="submit(document.getElementById('guess').value)"
-            class="py-4 rounded-lg bg-white text-background font-headline font-bold uppercase tracking-widest text-sm hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] transition-all active:scale-[0.98]">
-            SUBMIT
-          </button>
+        <!-- Shown after the game ends (and the result modal is closed) -->
+        <div id="resultBar" class="hidden">
+          <div class="bg-surface-container rounded-xl px-4 py-3 mb-3 border border-outline-variant/30 text-center">
+            <p class="text-[0.65rem] text-outline uppercase tracking-widest mb-0.5">The song was</p>
+            <p id="resultSong" class="text-on-surface font-headline font-bold leading-tight"></p>
+          </div>
+          <div class="grid grid-cols-2 gap-3 sm:gap-4">
+            <button type="button" class="openLeaderboard game-btn py-3.5 sm:py-4 rounded-lg bg-surface-container-high text-on-surface font-headline font-bold uppercase tracking-widest text-sm border border-outline-variant/30 hover:bg-surface-variant transition-all">
+              Leaderboard
+            </button>
+            <button type="button" class="playAgain game-btn py-3.5 sm:py-4 rounded-lg bg-white text-background font-headline font-bold uppercase tracking-widest text-sm hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] transition-all">
+              Play Again
+            </button>
+          </div>
         </div>
 
       </div>
     </div>
   </main>
 
-  <!-- Search dropdown (fixed to escape overflow-hidden parents) -->
-  <div id="songDropdown" class="hidden fixed z-[200] rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.6)]" style="background:rgba(13,21,40,0.98);border:1px solid rgba(59,73,76,0.5);backdrop-filter:blur(24px);">
-    <div id="songDropdownList" class="overflow-y-auto custom-scroll"></div>
-  </div>
-
   <!-- Leaderboard modal -->
-  <div class="winningScreen" id="leaderboardModal">
-    <div class="winningScreen-inner" style="max-width:480px;">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-headline font-bold text-on-surface">Leaderboard</h2>
-        <span class="material-symbols-outlined text-outline hover:text-on-surface cursor-pointer transition-colors" id="leaderboardClose">close</span>
+  <div class="winningScreen" id="leaderboardModal" role="dialog" aria-modal="true" aria-labelledby="leaderboardTitle">
+    <div class="winningScreen-inner lb-inner">
+      <div class="flex items-center justify-between mb-4 sm:mb-6">
+        <h2 id="leaderboardTitle" class="text-xl font-headline font-bold text-on-surface">Leaderboard</h2>
+        <button type="button" class="icon-btn -mr-2" id="leaderboardClose" aria-label="Close leaderboard">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
       <div id="leaderboardContent">
-        <p class="text-outline text-sm text-center py-4">Loading...</p>
+        <p class="lb-empty">Loading…</p>
       </div>
     </div>
   </div>
 
   <!-- Win screen -->
-  <div class="winningScreen" id="winningScreen">
+  <div class="winningScreen" id="winningScreen" role="dialog" aria-modal="true" aria-labelledby="winTitle">
     <div class="winningScreen-inner">
-      <div class="text-4xl mb-4">🎉</div>
-      <h2 class="text-2xl font-headline font-bold text-on-surface mb-2">You got it!</h2>
-      <p class="text-on-surface-variant text-sm mb-6">Nice ear. You identified the song.</p>
-      <div class="bg-surface-container rounded-xl px-5 py-4 mb-6 border border-outline-variant/30 text-center">
+      <div class="text-4xl mb-3">🎉</div>
+      <h2 id="winTitle" class="text-2xl font-headline font-bold text-on-surface mb-1">You got it!</h2>
+      <p id="winDetail" class="text-on-surface-variant text-sm mb-5"></p>
+      <div class="bg-surface-container rounded-xl px-5 py-4 mb-5 border border-outline-variant/30 text-center">
         <p class="text-xs text-outline uppercase tracking-widest mb-1">The song was</p>
         <p id="winSongName" class="text-on-surface font-headline font-bold text-lg leading-tight"></p>
         <p id="winSongArtist" class="text-primary-fixed-dim text-sm mt-0.5"></p>
       </div>
       <p id="winScore" class="text-[#00daf3] font-headline font-bold text-xl mb-4"></p>
-      <div class="flex gap-2 mb-4">
-        <input id="leaderboardUsername" type="text" maxlength="24" placeholder="Username"
-          style="min-width:0;flex:1 1 0%;"
-          class="bg-surface-container border border-outline-variant/30 rounded-lg py-3 px-4 text-on-surface placeholder:text-outline/50 outline-none font-medium focus:border-[#00daf3] transition-colors" />
-        <button id="leaderboardSubmitBtn"
-          style="flex-shrink:0;width:8rem;white-space:nowrap;"
-          class="py-3 rounded-lg bg-[#00daf3] text-background font-headline font-bold text-sm text-center hover:opacity-90 transition-opacity disabled:opacity-40">
+      <div class="flex gap-2 mb-1">
+        <input id="leaderboardUsername" type="text" maxlength="24" placeholder="Your name" aria-label="Name for the leaderboard"
+          autocomplete="nickname" enterkeyhint="done"
+          class="min-w-0 flex-1 bg-surface-container border border-outline-variant/30 rounded-lg py-3 px-4 text-base text-on-surface placeholder:text-outline/50 outline-none font-medium focus:border-[#00daf3] transition-colors" />
+        <button type="button" id="leaderboardSubmitBtn"
+          class="shrink-0 px-5 py-3 rounded-lg bg-[#00daf3] text-background font-headline font-bold text-sm whitespace-nowrap hover:opacity-90 transition-opacity disabled:opacity-50">
           Submit
         </button>
       </div>
-      <button class="playAgain w-full py-4 rounded-lg bg-white text-background font-headline font-bold uppercase tracking-widest text-sm hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] transition-all">
+      <p id="leaderboardMsg" class="text-xs text-on-surface-variant min-h-[1.25rem] mb-3" role="status" aria-live="polite"></p>
+      <button type="button" class="playAgain w-full py-4 rounded-lg bg-white text-background font-headline font-bold uppercase tracking-widest text-sm hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] transition-all">
         Play Again
+      </button>
+      <button type="button" class="closeResult w-full mt-2 py-3 text-outline hover:text-on-surface text-sm transition-colors">
+        Close &amp; hear the full clip
       </button>
     </div>
   </div>
 
   <!-- Lose screen -->
-  <div class="losingScreen" id="losingScreen">
+  <div class="losingScreen" id="losingScreen" role="dialog" aria-modal="true" aria-labelledby="loseTitle">
     <div class="losingScreen-inner">
-      <div class="text-4xl mb-4">😔</div>
-      <h2 class="text-2xl font-headline font-bold text-on-surface mb-2">Better luck next time</h2>
-      <p class="text-on-surface-variant text-sm mb-6">You used all 5 attempts.</p>
-      <div class="bg-surface-container rounded-xl px-5 py-4 mb-8 border border-outline-variant/30 text-center">
+      <div class="text-4xl mb-3">😔</div>
+      <h2 id="loseTitle" class="text-2xl font-headline font-bold text-on-surface mb-1">Better luck next time</h2>
+      <p class="text-on-surface-variant text-sm mb-5">You used all 5 attempts.</p>
+      <div class="bg-surface-container rounded-xl px-5 py-4 mb-6 border border-outline-variant/30 text-center">
         <p class="text-xs text-outline uppercase tracking-widest mb-1">The song was</p>
         <p id="loseSongName" class="text-on-surface font-headline font-bold text-lg leading-tight"></p>
         <p id="loseSongArtist" class="text-primary-fixed-dim text-sm mt-0.5"></p>
       </div>
-      <button class="playAgain w-full py-4 rounded-lg bg-surface-container-high border border-outline-variant/30 text-on-surface font-headline font-bold uppercase tracking-widest text-sm hover:bg-surface-variant transition-all">
+      <button type="button" class="playAgain w-full py-4 rounded-lg bg-white text-background font-headline font-bold uppercase tracking-widest text-sm hover:shadow-[0_0_24px_rgba(255,255,255,0.25)] transition-all">
         Try Again
+      </button>
+      <button type="button" class="closeResult w-full mt-2 py-3 text-outline hover:text-on-surface text-sm transition-colors">
+        Close &amp; hear the full clip
       </button>
     </div>
   </div>
@@ -243,6 +279,6 @@
   <!-- Confetti canvas -->
   <canvas id="my-canvas"></canvas>
 
-  <script src="js/main.js?v=8"></script>
+  <script src="js/main.js?v=9"></script>
 </body>
 </html>

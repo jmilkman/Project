@@ -1,259 +1,566 @@
 // Background confetti
 !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e=e||self).ConfettiGenerator=t()}(this,function(){"use strict";return function(e){var a={target:"confetti-holder",max:80,size:1,animate:!0,respawn:!0,props:["circle","square","triangle","line"],colors:[[165,104,246],[230,61,135],[0,199,228],[253,214,126]],clock:25,interval:null,rotate:!1,start_from_edge:!1,width:window.innerWidth,height:window.innerHeight};if(e&&(e.target&&(a.target=e.target),e.max&&(a.max=e.max),e.size&&(a.size=e.size),null!=e.animate&&(a.animate=e.animate),null!=e.respawn&&(a.respawn=e.respawn),e.props&&(a.props=e.props),e.colors&&(a.colors=e.colors),e.clock&&(a.clock=e.clock),null!=e.start_from_edge&&(a.start_from_edge=e.start_from_edge),e.width&&(a.width=e.width),e.height&&(a.height=e.height),null!=e.rotate&&(a.rotate=e.rotate)),"object"!=typeof a.target&&"string"!=typeof a.target)throw new TypeError("The target parameter should be a node or string");if("object"==typeof a.target&&(null===a.target||!a.target instanceof HTMLCanvasElement)||"string"==typeof a.target&&(null===document.getElementById(a.target)||!document.getElementById(a.target)instanceof HTMLCanvasElement))throw new ReferenceError("The target element does not exist or is not a canvas element");var t="object"==typeof a.target?a.target:document.getElementById(a.target),o=t.getContext("2d"),r=[];function n(e,t){e=e||1;var r=Math.random()*e;return t?Math.floor(r):r}var i=a.props.reduce(function(e,t){return e+(t.weight||1)},0);function s(){var e=a.props[function(){for(var e=Math.random()*i,t=0;t<a.props.length;++t){var r=a.props[t].weight||1;if(e<r)return t;e-=r}}()];return{prop:e.type?e.type:e,x:n(a.width),y:a.start_from_edge?a.clock<0?parseFloat(a.height)+10:-10:n(a.height),src:e.src,radius:n(4)+1,size:e.size,rotate:a.rotate,line:Math.floor(n(65)-30),angles:[n(10,!0)+2,n(10,!0)+2,n(10,!0)+2,n(10,!0)+2],color:a.colors[n(a.colors.length,!0)],rotation:n(360,!0)*Math.PI/180,speed:n(a.clock/7)+a.clock/30}}function l(e){if(e)switch(o.fillStyle=o.strokeStyle="rgba("+e.color+", "+(3<e.radius?.8:.4)+")",o.beginPath(),e.prop){case"circle":o.moveTo(e.x,e.y),o.arc(e.x,e.y,e.radius*a.size,0,2*Math.PI,!0),o.fill();break;case"triangle":o.moveTo(e.x,e.y),o.lineTo(e.x+e.angles[0]*a.size,e.y+e.angles[1]*a.size),o.lineTo(e.x+e.angles[2]*a.size,e.y+e.angles[3]*a.size),o.closePath(),o.fill();break;case"line":o.moveTo(e.x,e.y),o.lineTo(e.x+e.line*a.size,e.y+5*e.radius),o.lineWidth=2*a.size,o.stroke();break;case"square":o.save(),o.translate(e.x+15,e.y+5),o.rotate(e.rotation),o.fillRect(-15*a.size,-5*a.size,15*a.size,5*a.size),o.restore();break;case"svg":o.save();var t=new window.Image;t.src=e.src;var r=e.size||15;o.translate(e.x+r/2,e.y+r/2),e.rotate&&o.rotate(e.rotation),o.drawImage(t,-r/2*a.size,-r/2*a.size,r*a.size,r*a.size),o.restore()}}function c(){a.animate=!1,clearInterval(a.interval),requestAnimationFrame(function(){o.clearRect(0,0,t.width,t.height);var e=t.width;t.width=1,t.width=e})}return{render:function(){t.width=a.width,t.height=a.height,r=[];for(var e=0;e<a.max;e++)r.push(s());return requestAnimationFrame(function e(){for(var t in o.clearRect(0,0,a.width,a.height),r)l(r[t]);!function(){for(var e=0;e<a.max;e++){var t=r[e];t&&(a.animate&&(t.y+=t.speed),t.rotate&&(t.rotation+=t.speed/35),(0<=t.speed&&a.height<t.y||t.speed<0&&t.y<0)&&(a.respawn?(r[e]=t,r[e].x=n(a.width,!0),r[e].y=t.speed<0?parseFloat(a.height):-10):r[e]=void 0))}r.every(function(e){return void 0===e})&&c()}(),a.animate&&requestAnimationFrame(e)})},clear:c}}});
 
-// Replace with your deployed Worker URL after running `wrangler deploy`
+// ─── Config ──────────────────────────────────────────────────────────────────
+
 const API = 'https://guessthesong-api.jmielke-projects.workers.dev';
+const MAX_ATTEMPTS = 5;
+const PREVIEW_SECONDS = 30;
+let DURATIONS = [1, 3, 8, 17, 30]; // seconds unlocked per attempt; server may override
+
+const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+const $ = (id) => document.getElementById(id);
+
+const playButton   = $('playButton');
+const playIcon     = $('playIcon');
+const skipButton   = $('skipButton');
+const submitButton = $('submitButton');
+const guessInput   = $('guess');
+const clearBtn     = $('clearGuess');
+const searchIcon   = $('searchIcon');
+const dropdown     = $('songDropdown');
+const dropdownList = $('songDropdownList');
+const statusEl     = $('load-status');
+const timeEl       = $('timer');
+const clipLenEl    = $('timeleft');
+const progressBar  = $('progressBar');
+const unlockedBar  = $('unlockedBar');
+const winScreen    = $('winningScreen');
+const loseScreen   = $('losingScreen');
+const confettiCanvas = $('my-canvas');
 
 let PLAYLIST = [];
+let gameId = null;
+let attempt = 0;          // 0-based index of the current attempt
+let busy = false;         // a guess/skip request is in flight
+let gameOver = false;
+let audio = null;
+let audioKeyLoaded = null; // which attempt (or 'full') the loaded audio src belongs to
+let playLimit = 0;         // seconds to stop playback at (current attempt or full clip)
+let rafId = null;
+let lastScore = null;
+let confetti = null;
+let clientStart = null;    // first play, used for scoring only if the API doesn't return timeMs
+const guessedSet = new Set();
 
-async function loadPlaylist() {
-    try {
-        const res = await fetch(`${API}/playlist`);
-        PLAYLIST = await res.json();
-    } catch { /* autocomplete just stays empty if this fails */ }
+// ─── Utilities ───────────────────────────────────────────────────────────────
+
+function fmt(sec) {
+    sec = Math.max(0, Math.floor(sec));
+    return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
 }
 
-const playButton  = document.getElementById('playButton');
-const skipButton  = document.getElementById('skipButton');
-const submitButton = document.getElementById('submitButton');
-const timerDisplay = document.getElementById('timer');
-const confe = document.querySelector('#my-canvas');
-
-const popup      = document.getElementById('winningScreen');
-const losingpopup = document.getElementById('losingScreen');
-let timerInterval;
-
-let gameId        = null;
-let gameStartTime = null;
-
-var confettiSettings = { target: 'my-canvas' };
-var confetti = new ConfettiGenerator(confettiSettings);
-confetti.render();
-
-const closeButtons = document.querySelectorAll('.playAgain');
-closeButtons.forEach(button => {
-    button.onclick = function() {
-        window.location.reload();
-        popup.classList.remove('open', 'active');
-        losingpopup.classList.remove('open', 'active');
-    };
-});
-
-// ─── Timer ───────────────────────────────────────────────────────────────────
-
-function startTimer() {
-    startTime = Date.now();
-    timerInterval = setInterval(() => {
-        let elapsedTime = Date.now() - startTime;
-        let seconds = Math.floor(elapsedTime / 1000);
-        let minutes = Math.floor(seconds / 60);
-        seconds = seconds % 60;
-        timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    }, 1000);
+function setStatus(text, isError = false) {
+    statusEl.textContent = text;
+    statusEl.classList.toggle('status-error', isError);
 }
 
-function stopTimer() {
-    clearInterval(timerInterval);
-    let elapsedTime = Date.now() - startTime;
-    let seconds = Math.floor(elapsedTime / 1000);
-    let minutes = Math.floor(seconds / 60);
-    seconds = seconds % 60;
-    timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+function escHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function resetTimer() {
-    clearInterval(timerInterval);
-    timerDisplay.textContent = '0:00';
+function normalize(str) {
+    return String(str || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim();
 }
 
-// ─── Play button ──────────────────────────────────────────────────────────────
-
-const progressBar = document.getElementById('progressBar');
-const DURATIONS_MS = [1000, 3000, 8000, 17000, 30000];
-
-playButton.addEventListener('click', function() {
-    this.classList.add('pulse-animation');
-    setTimeout(() => this.classList.remove('pulse-animation'), 850);
-
-    const audioPlayer = document.querySelector('audio');
-    if (!audioPlayer || !gameId) return;
-
-    // Cache-bust by attempt so the browser re-fetches the correct duration from the server
-    audioPlayer.src = `${API}/game/${gameId}/audio?a=${currentGuessBox}`;
-    if (progressBar) progressBar.style.width = '0%';
-    audioPlayer.play().catch(() => {});
-    resetTimer();
-});
-
-// ─── Skip / Submit button animations ─────────────────────────────────────────
-
-skipButton.addEventListener('click', function() {
-    this.classList.add('pulse-animation_skip');
-    setTimeout(() => this.classList.remove('pulse-animation_skip'), 850);
-});
-
-submitButton.addEventListener('click', function() {
-    this.classList.add('pulse-animation_submit');
-    setTimeout(() => this.classList.remove('pulse-animation_submit'), 850);
-});
-
-// ─── Loading state ────────────────────────────────────────────────────────────
-
-function setLoadingState() {
-    const btn = document.getElementById('playButton');
-    if (btn) btn.style.opacity = '0.4';
+async function api(path, options = {}) {
+    const res = await fetch(`${API}${path}`, options);
+    let data = {};
+    try { data = await res.json(); } catch { /* non-JSON */ }
+    if (!res.ok) {
+        const err = new Error(data.error || `Request failed (${res.status})`);
+        err.status = res.status;
+        throw err;
+    }
+    return data;
 }
 
-function clearLoadingState() {
-    const btn = document.getElementById('playButton');
-    if (btn) btn.style.opacity = '1';
-    const status = document.getElementById('load-status');
-    if (status) status.textContent = 'Press play to listen';
+function shakeInput() {
+    guessInput.classList.remove('input-error');
+    void guessInput.offsetWidth; // restart animation
+    guessInput.classList.add('input-error');
+    setTimeout(() => guessInput.classList.remove('input-error'), 400);
 }
 
-// ─── Game start ───────────────────────────────────────────────────────────────
+function pulse(el, cls) {
+    el.classList.add(cls);
+    setTimeout(() => el.classList.remove(cls), 850);
+}
 
-async function startGame() {
-    setLoadingState();
-    try {
-        const res = await fetch(`${API}/game/start`, { method: 'POST' });
-        const data = await res.json();
-        gameId = data.gameId;
-        gameStartTime = Date.now();
+// ─── Clip timeline UI ────────────────────────────────────────────────────────
 
-        const audioPlayer = document.createElement('audio');
-        audioPlayer.setAttribute('playsinline', '');
-        document.getElementById('song-preview').innerHTML = '';
-        document.getElementById('song-preview').appendChild(audioPlayer);
+function buildMarkers() {
+    const holder = $('clipMarkers');
+    holder.innerHTML = '';
+    DURATIONS.slice(0, -1).forEach(d => {
+        const m = document.createElement('span');
+        m.className = 'clip-marker';
+        m.style.left = `${(d / PREVIEW_SECONDS) * 100}%`;
+        holder.appendChild(m);
+    });
+}
 
-        addPlayPauseEventListener(audioPlayer);
-        clearLoadingState();
-    } catch {
-        const status = document.getElementById('load-status');
-        if (status) status.textContent = 'Failed to connect — try refreshing';
+function unlockedSeconds() {
+    return gameOver ? PREVIEW_SECONDS : DURATIONS[Math.min(attempt, DURATIONS.length - 1)];
+}
+
+function updateClipUI() {
+    const secs = unlockedSeconds();
+    unlockedBar.style.width = `${(secs / PREVIEW_SECONDS) * 100}%`;
+    clipLenEl.textContent = fmt(secs);
+    if (!gameOver) {
+        if (attempt >= MAX_ATTEMPTS - 1) {
+            skipButton.textContent = 'Give up';
+        } else {
+            const more = DURATIONS[attempt + 1] - DURATIONS[attempt];
+            skipButton.textContent = `Skip (+${more}s)`;
+        }
     }
 }
 
-function addPlayPauseEventListener(audioPlayer) {
-    let rafId = null;
-    let progressTimer = null;
+function setProgress(sec) {
+    progressBar.style.width = `${Math.min(sec / PREVIEW_SECONDS, 1) * 100}%`;
+    timeEl.textContent = fmt(sec);
+}
 
-    audioPlayer.addEventListener('play', function() {
-        startTimer();
+function setPlayingUI(playing) {
+    playIcon.textContent = playing ? 'stop' : 'play_arrow';
+    playButton.setAttribute('aria-label', playing ? 'Stop clip' : 'Play clip');
+    playButton.classList.toggle('is-playing', playing);
+}
+
+function idleStatus() {
+    setStatus(gameOver ? 'Tap play to hear it again' : 'Tap play to listen again');
+}
+
+// ─── Audio ───────────────────────────────────────────────────────────────────
+
+function stopAudio() {
+    cancelAnimationFrame(rafId);
+    if (audio && !audio.paused) audio.pause();
+    setPlayingUI(false);
+}
+
+// Cut playback by the audio clock (not a wall-clock timer), so slow mobile
+// buffering can't shorten the clip the player hears.
+function tick() {
+    if (!audio) return;
+    const t = audio.currentTime;
+    if (t >= playLimit) {
+        audio.pause();
+        setProgress(playLimit);
+        idleStatus();
+        return;
+    }
+    setProgress(t);
+    rafId = requestAnimationFrame(tick);
+}
+
+function createAudio() {
+    audio = new Audio();
+    audio.preload = 'auto';
+    audio.setAttribute('playsinline', '');
+    audio.setAttribute('webkit-playsinline', '');
+    audio.addEventListener('playing', () => {
+        setStatus(gameOver ? 'Playing the full clip' : 'Listening…');
         cancelAnimationFrame(rafId);
-        clearTimeout(progressTimer);
-
-        const playStart = Date.now();
-        const duration = DURATIONS_MS[currentGuessBox - 1];
-
-        function updateProgress() {
-            const pct = Math.min((Date.now() - playStart) / duration * 100, 100);
-            if (progressBar) progressBar.style.width = pct + '%';
-            if (pct < 100) rafId = requestAnimationFrame(updateProgress);
-        }
-        rafId = requestAnimationFrame(updateProgress);
-
-        // Pause audio and fill bar after the allowed duration
-        progressTimer = setTimeout(() => {
-            audioPlayer.pause();
-            if (progressBar) progressBar.style.width = '100%';
-            cancelAnimationFrame(rafId);
-            stopTimer();
-        }, duration);
+        rafId = requestAnimationFrame(tick);
     });
-
-    audioPlayer.addEventListener('ended', function() {
-        clearTimeout(progressTimer);
+    audio.addEventListener('waiting', () => setStatus('Buffering…'));
+    // No status update here: 'pause' fires asynchronously and would overwrite
+    // messages set right after a programmatic stop (e.g. "+2s unlocked").
+    audio.addEventListener('pause', () => {
         cancelAnimationFrame(rafId);
-        if (progressBar) progressBar.style.width = '100%';
-        stopTimer();
+        setPlayingUI(false);
     });
-
-    audioPlayer.addEventListener('pause', function() {
-        clearTimeout(progressTimer);
+    audio.addEventListener('ended', () => {
         cancelAnimationFrame(rafId);
+        setProgress(Math.min(audio.duration || playLimit, playLimit));
+        setPlayingUI(false);
+        idleStatus();
+    });
+    audio.addEventListener('error', () => {
+        if (!audio.getAttribute('src')) return;
+        setPlayingUI(false);
+        setStatus('Could not load audio — tap play to retry', true);
+        audioKeyLoaded = null;
     });
 }
 
-// ─── Custom search dropdown ───────────────────────────────────────────────────
+// The server only sends the seconds unlocked for the current attempt,
+// so the src changes every time a new attempt (or the full clip) unlocks.
+function loadAudioForAttempt() {
+    if (!audio || !gameId) return;
+    const key = gameOver ? 'full' : String(attempt);
+    if (audioKeyLoaded === key) return;
+    audioKeyLoaded = key;
+    audio.src = `${API}/game/${gameId}/audio?a=${key}`;
+    audio.load();
+}
 
-const guessInput   = document.getElementById('guess');
-const dropdown     = document.getElementById('songDropdown');
-const dropdownList = document.getElementById('songDropdownList');
-const clearBtn     = document.getElementById('clearGuess');
-const searchIcon   = document.getElementById('searchIcon');
+function playClip() {
+    if (!audio || !gameId) return;
+    if (!audio.paused) { stopAudio(); idleStatus(); return; }
+    if (!clientStart) clientStart = Date.now();
+    loadAudioForAttempt();
+    playLimit = unlockedSeconds();
+    try { audio.currentTime = 0; } catch { /* not seekable yet */ }
+    setProgress(0);
+    setPlayingUI(true);
+    setStatus('Loading clip…');
+    audio.play().catch(() => {
+        setPlayingUI(false);
+        setStatus('Tap play to listen');
+    });
+}
+
+playButton.addEventListener('click', () => {
+    pulse(playButton, 'pulse-animation');
+    playClip();
+});
+
+// ─── Game start ──────────────────────────────────────────────────────────────
+
+async function loadPlaylist() {
+    try { PLAYLIST = await api('/playlist'); } catch { /* autocomplete stays empty */ }
+    PLAYLIST.forEach(s => { s._n = normalize(s.name); s._a = normalize(s.artistNames); });
+}
+
+async function startGame() {
+    playButton.disabled = true;
+    setStatus('Loading song…');
+    try {
+        const data = await api('/game/start', { method: 'POST' });
+        gameId = data.gameId;
+        if (Array.isArray(data.durations) && data.durations.length === MAX_ATTEMPTS) DURATIONS = data.durations;
+        buildMarkers();
+        updateClipUI();
+        createAudio();
+        loadAudioForAttempt();
+        playButton.disabled = false;
+        setControlsDisabled(false);
+        setStatus(isTouch ? 'Tap play to listen' : 'Press play (or Space) to listen');
+    } catch {
+        setStatus('Failed to connect — tap here to retry', true);
+        statusEl.onclick = () => { statusEl.onclick = null; startGame(); };
+    }
+}
+
+// ─── Guess rows ──────────────────────────────────────────────────────────────
+
+function rowEl(i) { return document.querySelector(`.guessbox${i + 1}`); }
+
+function markRow(i, text, kind) {
+    const row = rowEl(i);
+    const p = row.querySelector('p');
+    p.textContent = '';
+    p.className = kind;
+    const icon = document.createElement('span');
+    icon.className = 'material-symbols-outlined row-icon';
+    icon.textContent = kind === 'correct' ? 'check' : kind === 'skipped' ? 'skip_next' : 'close';
+    const label = document.createElement('span');
+    label.className = 'row-text';
+    label.textContent = text;
+    p.append(icon, label);
+    row.classList.remove('active-box');
+}
+
+function activateRow(i) {
+    document.querySelectorAll('.active-box').forEach(el => el.classList.remove('active-box'));
+    if (i < MAX_ATTEMPTS) rowEl(i).classList.add('active-box');
+}
+
+function setControlsDisabled(disabled) {
+    skipButton.disabled = disabled;
+    submitButton.disabled = disabled;
+}
+
+function advanceTo(nextAttempt, message) {
+    attempt = typeof nextAttempt === 'number' ? nextAttempt : attempt + 1;
+    activateRow(attempt);
+    stopAudio();
+    updateClipUI();
+    loadAudioForAttempt();
+    setProgress(0);
+    setStatus(`${message} +${DURATIONS[attempt] - DURATIONS[attempt - 1]}s unlocked — tap play`);
+}
+
+// ─── Skip / Submit ───────────────────────────────────────────────────────────
+
+async function skip() {
+    if (!gameId || busy || gameOver) return;
+    pulse(skipButton, 'pulse-animation_skip');
+    busy = true;
+    setControlsDisabled(true);
+    try {
+        const data = await api(`/game/${gameId}/skip`, { method: 'POST' });
+        markRow(attempt, attempt >= MAX_ATTEMPTS - 1 ? 'Gave up' : 'Skipped', 'skipped');
+        if (data.over || data.songName) endGame(false, data);
+        else advanceTo(data.attempt, 'Skipped.');
+    } catch (e) {
+        handleRequestError(e);
+    } finally {
+        busy = false;
+        if (!gameOver) setControlsDisabled(false);
+    }
+}
+
+async function submit(guess) {
+    guess = (guess || '').trim();
+    if (!gameId || busy || gameOver) return;
+    if (!guess) { shakeInput(); guessInput.focus(); return; }
+
+    const key = normalize(guess);
+    if (guessedSet.has(key)) {
+        shakeInput();
+        setStatus('You already tried that one', true);
+        return;
+    }
+
+    pulse(submitButton, 'pulse-animation_submit');
+    busy = true;
+    setControlsDisabled(true);
+    hideDropdown();
+    try {
+        const data = await api(`/game/${gameId}/guess`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ guess }),
+        });
+        guessedSet.add(key);
+        guessInput.value = '';
+        onInputChange(false);
+
+        if (data.correct) {
+            markRow(attempt, guess, 'correct');
+            endGame(true, data);
+        } else {
+            markRow(attempt, guess, 'incorrect');
+            if (data.over || data.songName) endGame(false, data);
+            else advanceTo(data.attempt, 'Not quite.');
+        }
+    } catch (e) {
+        handleRequestError(e);
+    } finally {
+        busy = false;
+        if (!gameOver) setControlsDisabled(false);
+    }
+}
+
+function handleRequestError(e) {
+    if (e.status === 404) {
+        setStatus('This game expired — starting a new one…', true);
+        setTimeout(() => window.location.reload(), 1500);
+    } else {
+        setStatus('Network error — try again', true);
+    }
+}
+
+skipButton.addEventListener('click', skip);
+submitButton.addEventListener('click', () => submit(guessInput.value));
+
+// ─── End of game ─────────────────────────────────────────────────────────────
+
+function computeScore(attempts, timeMs) {
+    return Math.max(0, 1000 - (attempts - 1) * 150 - Math.floor(timeMs / 1000) * 5);
+}
+
+function openModal(el) {
+    el.classList.add('open');
+    document.body.classList.add('modal-open');
+}
+
+function closeModal(el) {
+    el.classList.remove('open');
+    if (!document.querySelector('.winningScreen.open, .losingScreen.open')) {
+        document.body.classList.remove('modal-open');
+    }
+}
+
+function endGame(won, data) {
+    gameOver = true;
+    stopAudio();
+    setControlsDisabled(true);
+    guessInput.disabled = true;
+    activateRow(MAX_ATTEMPTS);
+    updateClipUI();
+    loadAudioForAttempt(); // full clip is unlocked once the game is over
+    $('resultBar').classList.remove('hidden');
+    $('gameControls').classList.add('hidden');
+
+    const name = data.songName || 'Unknown';
+    const artist = data.artistName || '';
+    const prefix = won ? 'win' : 'lose';
+    $(prefix + 'SongName').textContent = name;
+    $(prefix + 'SongArtist').textContent = artist;
+    $('resultSong').textContent = artist ? `${name} — ${artist}` : name;
+    setStatus('Tap play to hear the full clip');
+
+    if (won) {
+        const attempts = data.attempts || attempt + 1;
+        if (typeof data.timeMs !== 'number') data.timeMs = clientStart ? Date.now() - clientStart : 0;
+        lastScore = typeof data.score === 'number' ? data.score : computeScore(attempts, data.timeMs);
+        $('winScore').textContent = `Score: ${lastScore}`;
+        $('winDetail').textContent = attempts === 1 ? 'First try — nice ear!' : `Solved in ${attempts} attempts.`;
+        setupLeaderboardSubmit(attempts, data);
+        openModal(winScreen);
+        startConfetti();
+    } else {
+        openModal(loseScreen);
+    }
+}
+
+function startConfetti() {
+    try {
+        confettiCanvas.classList.add('active');
+        confetti = new ConfettiGenerator({
+            target: 'my-canvas', max: isTouch ? 60 : 100,
+            width: window.innerWidth, height: window.innerHeight,
+        });
+        confetti.render();
+        setTimeout(stopConfetti, 6000);
+    } catch { /* decorative only */ }
+}
+
+function stopConfetti() {
+    if (confetti) { confetti.clear(); confetti = null; }
+    confettiCanvas.classList.remove('active');
+}
+
+function setupLeaderboardSubmit(attempts, data) {
+    const btn = $('leaderboardSubmitBtn');
+    const input = $('leaderboardUsername');
+    const msg = $('leaderboardMsg');
+    try { input.value = localStorage.getItem('gts-username') || ''; } catch { /* storage blocked */ }
+
+    async function send() {
+        const username = input.value.trim().slice(0, 24);
+        if (!username) { input.focus(); return; }
+        btn.disabled = true;
+        input.disabled = true;
+        btn.textContent = 'Saving…';
+        msg.textContent = '';
+        msg.classList.remove('status-error');
+        try {
+            await api('/leaderboard', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    gameId, username,
+                    // legacy fields for the previous API version; the current API computes the score itself
+                    score: lastScore, songName: data.songName, artistName: data.artistName,
+                    attempts, timeMs: data.timeMs,
+                }),
+            });
+            try { localStorage.setItem('gts-username', username); } catch { /* storage blocked */ }
+            btn.textContent = 'Saved!';
+            msg.textContent = 'You’re on the board.';
+        } catch (e) {
+            btn.disabled = false;
+            input.disabled = false;
+            btn.textContent = 'Submit';
+            msg.textContent = e.message || 'Could not save — try again';
+            msg.classList.add('status-error');
+        }
+    }
+
+    btn.onclick = send;
+    input.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); send(); } };
+}
+
+document.querySelectorAll('.playAgain').forEach(b => b.addEventListener('click', () => window.location.reload()));
+
+// "See the board" — close the result modal and leave the finished game visible underneath.
+document.querySelectorAll('.closeResult').forEach(b => b.addEventListener('click', () => {
+    closeModal(b.closest('.winningScreen, .losingScreen'));
+    stopConfetti();
+}));
+
+// ─── Search dropdown ─────────────────────────────────────────────────────────
+
+const MAX_RESULTS = 60;
 let highlightedIndex = -1;
 let filteredSongs = [];
 
+function hideDropdown() {
+    dropdown.classList.add('hidden');
+    guessInput.setAttribute('aria-expanded', 'false');
+    guessInput.removeAttribute('aria-activedescendant');
+    highlightedIndex = -1;
+}
+
 function positionDropdown() {
+    // Drop-up anchored to the input; cap height to the visible space above it
+    // (the visual viewport shrinks when the mobile keyboard is open).
     const rect = guessInput.getBoundingClientRect();
-    const vvHeight    = window.visualViewport ? window.visualViewport.height    : window.innerHeight;
-    const vvOffsetTop = window.visualViewport ? window.visualViewport.offsetTop : 0;
+    const vv = window.visualViewport;
+    const top = vv ? rect.top - vv.offsetTop : rect.top;
+    const navH = document.querySelector('nav').getBoundingClientRect().height;
+    const space = top - navH - 16;
+    dropdownList.style.maxHeight = `${Math.max(Math.min(space, 320), 120)}px`;
+}
 
-    const spaceAbove = rect.top  - vvOffsetTop;
-    const spaceBelow = vvHeight  - (rect.bottom - vvOffsetTop);
-
-    dropdown.style.left  = rect.left + 'px';
-    dropdown.style.width = rect.width + 'px';
-
-    if (spaceAbove >= spaceBelow || spaceAbove > 160) {
-        dropdown.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
-        dropdown.style.top    = 'auto';
-        dropdownList.style.maxHeight = Math.min(Math.max(spaceAbove - 16, 80), 320) + 'px';
-    } else {
-        dropdown.style.top    = (rect.bottom + 8) + 'px';
-        dropdown.style.bottom = 'auto';
-        dropdownList.style.maxHeight = Math.min(Math.max(spaceBelow - 16, 80), 320) + 'px';
+function getMatches(q) {
+    const nq = normalize(q);
+    if (!nq) return [];
+    const scored = [];
+    for (const s of PLAYLIST) {
+        let rank = -1;
+        if (s._n.startsWith(nq)) rank = 0;
+        else if (s._n.includes(' ' + nq)) rank = 1;
+        else if (s._a.startsWith(nq) || s._a.includes(' ' + nq)) rank = 2;
+        else if (s._n.includes(nq)) rank = 3;
+        else if (s._a.includes(nq)) rank = 4;
+        if (rank >= 0) scored.push([rank, s]);
     }
+    scored.sort((a, b) => a[0] - b[0] || a[1].name.localeCompare(b[1].name));
+    return scored.slice(0, MAX_RESULTS).map(x => x[1]);
+}
+
+function highlight(text, q) {
+    const safe = escHtml(text);
+    const sq = escHtml(q);
+    if (!sq) return safe;
+    const re = new RegExp(`(${sq.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    return safe.replace(re, '<em>$1</em>');
 }
 
 function showDropdown(songs, query) {
     filteredSongs = songs;
     highlightedIndex = -1;
     dropdownList.innerHTML = '';
-
     if (!songs.length) {
-        dropdown.classList.add('hidden');
-        return;
+        if (!query || !PLAYLIST.length) { hideDropdown(); return; }
+        dropdownList.innerHTML = '<div class="song-empty">No matching songs — you can still submit it</div>';
     }
-
-    const re = query
-        ? new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
-        : null;
 
     songs.forEach((song, i) => {
         const el = document.createElement('div');
         el.className = 'song-option';
-        el.dataset.index = i;
-
-        const nameEl = document.createElement('span');
-        nameEl.className = 'song-name';
-        nameEl.innerHTML = re ? song.name.replace(re, '<em>$1</em>') : song.name;
-
-        const artistEl = document.createElement('span');
-        artistEl.className = 'song-artist';
-        artistEl.textContent = song.artistNames;
-
-        el.appendChild(nameEl);
-        el.appendChild(artistEl);
-
-        el.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            selectSong(song);
-        });
-
+        el.setAttribute('role', 'option');
+        el.id = `song-opt-${i}`;
+        el.innerHTML = `<span class="song-name">${highlight(song.name, query)}</span>` +
+                       `<span class="song-artist">${highlight(song.artistNames, query)}</span>`;
+        // Keep focus in the input; select on click so a touch-scroll doesn't pick a song.
+        el.addEventListener('mousedown', e => e.preventDefault());
+        el.addEventListener('click', () => selectSong(song));
         dropdownList.appendChild(el);
     });
 
     positionDropdown();
     dropdown.classList.remove('hidden');
+    dropdownList.scrollTop = 0;
+    guessInput.setAttribute('aria-expanded', 'true');
 }
 
 function selectSong(song) {
     guessInput.value = `${song.name} - ${song.artistNames}`;
-    dropdown.classList.add('hidden');
-    clearBtn.classList.remove('hidden');
-    guessInput.focus();
+    onInputChange(false);
+    hideDropdown();
+    // On phones, drop the keyboard so the Submit button is visible.
+    if (isTouch) guessInput.blur(); else guessInput.focus();
 }
 
 function setHighlight(index) {
@@ -262,298 +569,137 @@ function setHighlight(index) {
     if (index >= 0 && index < items.length) {
         items[index].classList.add('highlighted');
         items[index].scrollIntoView({ block: 'nearest' });
+        guessInput.setAttribute('aria-activedescendant', items[index].id);
     }
     highlightedIndex = index;
 }
 
-function getMatches(q) {
-    if (!q) return [...PLAYLIST].sort((a, b) => a.name.localeCompare(b.name));
-    const lq = q.toLowerCase();
-    return PLAYLIST.filter(s =>
-        s.name.toLowerCase().includes(lq) ||
-        s.artistNames.toLowerCase().includes(lq)
-    );
-}
-
-guessInput.addEventListener('input', () => {
+function onInputChange(show = true) {
     const q = guessInput.value.trim();
     clearBtn.classList.toggle('hidden', q === '');
-    searchIcon.style.color = q ? '#00daf3' : '#849396';
-    showDropdown(getMatches(q), q);
-});
+    searchIcon.classList.toggle('active', q !== '');
+    if (show) showDropdown(getMatches(q), q);
+}
+
+guessInput.addEventListener('input', () => onInputChange(true));
 
 guessInput.addEventListener('keydown', (e) => {
-    const items = dropdownList.querySelectorAll('.song-option');
-    if (e.key === 'ArrowDown') {
+    const open = !dropdown.classList.contains('hidden');
+    const count = filteredSongs.length;
+    if (e.key === 'ArrowDown' && open && count) {
         e.preventDefault();
-        setHighlight(Math.min(highlightedIndex + 1, items.length - 1));
-    } else if (e.key === 'ArrowUp') {
+        setHighlight(Math.min(highlightedIndex + 1, count - 1));
+    } else if (e.key === 'ArrowUp' && open && count) {
         e.preventDefault();
         setHighlight(Math.max(highlightedIndex - 1, 0));
     } else if (e.key === 'Enter') {
-        if (highlightedIndex >= 0 && filteredSongs[highlightedIndex]) {
+        e.preventDefault();
+        if (open && highlightedIndex >= 0 && filteredSongs[highlightedIndex]) {
             selectSong(filteredSongs[highlightedIndex]);
+        } else {
+            submit(guessInput.value);
         }
     } else if (e.key === 'Escape') {
-        dropdown.classList.add('hidden');
+        hideDropdown();
     }
 });
 
 guessInput.addEventListener('focus', () => {
-    showDropdown(getMatches(guessInput.value.trim()), guessInput.value.trim());
+    if (guessInput.value.trim()) onInputChange(true);
 });
 
-guessInput.addEventListener('blur', () => {
-    setTimeout(() => dropdown.classList.add('hidden'), 150);
+guessInput.addEventListener('blur', () => setTimeout(hideDropdown, 150));
+
+clearBtn.addEventListener('mousedown', e => e.preventDefault());
+clearBtn.addEventListener('click', () => {
+    guessInput.value = '';
+    onInputChange(false);
+    hideDropdown();
+    guessInput.focus();
 });
 
-window.addEventListener('resize', () => {
+['resize', 'orientationchange'].forEach(ev => window.addEventListener(ev, () => {
     if (!dropdown.classList.contains('hidden')) positionDropdown();
-});
-
+}));
 if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', () => {
         if (!dropdown.classList.contains('hidden')) positionDropdown();
     });
-    window.visualViewport.addEventListener('scroll', () => {
-        if (!dropdown.classList.contains('hidden')) positionDropdown();
-    });
 }
 
-const helpBtn     = document.getElementById('helpBtn');
-const helpTooltip = document.getElementById('helpTooltip');
-
-if (helpBtn && helpTooltip) {
-    helpBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = !helpTooltip.classList.contains('opacity-0');
-        helpTooltip.classList.toggle('opacity-0', isOpen);
-        helpTooltip.classList.toggle('pointer-events-none', isOpen);
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!helpBtn.contains(e.target)) {
-            helpTooltip.classList.add('opacity-0', 'pointer-events-none');
-        }
-    });
-}
-
-clearBtn.addEventListener('click', () => {
-    guessInput.value = '';
-    clearBtn.classList.add('hidden');
-    searchIcon.style.color = '#849396';
-    dropdown.classList.add('hidden');
-    guessInput.focus();
+// Space toggles playback when not typing
+document.addEventListener('keydown', (e) => {
+    if (e.code !== 'Space' || e.target.closest('input, textarea, button')) return;
+    if (document.body.classList.contains('modal-open')) return;
+    e.preventDefault();
+    playClip();
 });
 
-// ─── Game logic ───────────────────────────────────────────────────────────────
+// ─── Help popover ────────────────────────────────────────────────────────────
 
-let currentGuessBox = 1;
-let skipping = false;
+const helpBtn = $('helpBtn');
+const helpTooltip = $('helpTooltip');
 
-function revealAnswer(songName, artistName, screenPrefix) {
-    document.getElementById(screenPrefix + 'SongName').textContent   = songName;
-    document.getElementById(screenPrefix + 'SongArtist').textContent = artistName;
+function setHelp(open) {
+    helpTooltip.classList.toggle('opacity-0', !open);
+    helpTooltip.classList.toggle('pointer-events-none', !open);
+    helpBtn.setAttribute('aria-expanded', String(open));
 }
 
-function advanceActiveBox(from) {
-    document.querySelector(`.guessbox${from}`).classList.remove('active-box');
-    if (from < 5) {
-        document.querySelector(`.guessbox${from + 1}`).classList.add('active-box');
-    }
-}
+helpBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setHelp(helpTooltip.classList.contains('opacity-0'));
+});
+document.addEventListener('click', (e) => {
+    if (!helpTooltip.contains(e.target)) setHelp(false);
+});
 
-async function skip() {
-    if (!gameId || skipping || currentGuessBox > 5) return;
-    skipping = true;
+// ─── Leaderboard modal ───────────────────────────────────────────────────────
 
-    try {
-        if (currentGuessBox === 5) {
-            const guessBox = document.querySelector('.guessbox5 p');
-            if (!guessBox) return;
+const leaderboardModal = $('leaderboardModal');
+const leaderboardContent = $('leaderboardContent');
 
-            guessBox.textContent = 'Skipped';
-            guessBox.classList.add('incorrect');
-            const iconSpan = document.createElement('span');
-            iconSpan.classList.add('fa', 'fa-x');
-            guessBox.insertBefore(iconSpan, guessBox.firstChild);
-            document.querySelector('.guessbox5').classList.remove('active-box');
-
-            try {
-                const res  = await fetch(`${API}/game/${gameId}/skip`, { method: 'POST' });
-                const data = await res.json();
-                revealAnswer(data.songName || '?', data.artistName || '?', 'lose');
-            } catch {
-                revealAnswer('Unknown', 'Unknown', 'lose');
-            }
-            losingpopup.classList.add('open');
-        } else {
-            // Fetch first — only mark the box and advance if the server confirmed
-            let data;
-            try {
-                const res = await fetch(`${API}/game/${gameId}/skip`, { method: 'POST' });
-                data = await res.json();
-            } catch {
-                return; // network error — leave the box unchanged so the user can retry
-            }
-
-            const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
-            if (!guessBox) return;
-
-            guessBox.textContent = 'Skipped';
-            guessBox.classList.add('incorrect');
-            const iconSpan = document.createElement('span');
-            iconSpan.classList.add('fa', 'fa-x');
-            guessBox.insertBefore(iconSpan, guessBox.firstChild);
-
-            advanceActiveBox(currentGuessBox);
-            currentGuessBox++;
-        }
-    } finally {
-        skipping = false;
-    }
-}
-
-function computeScore(attempts, timeMs) {
-    return Math.max(0, 1000 - (attempts - 1) * 150 - Math.floor(timeMs / 1000) * 5);
-}
-
-async function submitLeaderboardScore(username, score, songName, artistName, attempts, timeMs) {
-    try {
-        await fetch(`${API}/leaderboard`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, score, songName, artistName, attempts, timeMs }),
-        });
-    } catch { /* leaderboard is non-critical */ }
-}
-
-function showLeaderboardSubmit(attempts, timeMs, songName, artistName) {
-    const score   = computeScore(attempts, timeMs);
-    const scoreEl = document.getElementById('winScore');
-    if (scoreEl) scoreEl.textContent = `Score: ${score}`;
-
-    const submitBtn = document.getElementById('leaderboardSubmitBtn');
-    if (submitBtn) {
-        submitBtn.onclick = async function() {
-            const username = (document.getElementById('leaderboardUsername').value || '').trim().slice(0, 24);
-            if (!username) return;
-            this.disabled = true;
-            this.textContent = 'Submitted!';
-            await submitLeaderboardScore(username, score, songName, artistName, attempts, timeMs);
-        };
-    }
-}
-
-async function submit(guess) {
-    if (!guess.trim()) {
-        guessInput.classList.add('input-error');
-        guessInput.focus();
-        setTimeout(() => guessInput.classList.remove('input-error'), 350);
-        return;
-    }
-    if (!gameId) return;
-
-    let data;
-    try {
-        const res = await fetch(`${API}/game/${gameId}/guess`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ guess }),
-        });
-        data = await res.json();
-    } catch {
-        return; // network error — don't advance state
-    }
-
-    const guessBox = document.querySelector(`.guessbox${currentGuessBox} p`);
-
-    if (data.correct) {
-        guessBox.textContent = guess;
-        guessBox.classList.add('correct');
-        const iconSpan = document.createElement('span');
-        iconSpan.classList.add('fa', 'fa-check');
-        guessBox.insertBefore(iconSpan, guessBox.firstChild);
-
-        document.querySelector(`.guessbox${currentGuessBox}`).classList.remove('active-box');
-        revealAnswer(data.songName, data.artistName, 'win');
-        popup.classList.add('open');
-        confe.classList.add('active');
-
-        stopTimer();
-        const finalTimeMs = Date.now() - gameStartTime;
-        showLeaderboardSubmit(currentGuessBox, finalTimeMs, data.songName, data.artistName);
-
-    } else {
-        guessBox.textContent = guess;
-        guessBox.classList.add('incorrect');
-        const iconSpan = document.createElement('span');
-        iconSpan.classList.add('fa', 'fa-x');
-        guessBox.insertBefore(iconSpan, guessBox.firstChild);
-
-        // Server sends songName on the final wrong answer
-        if (data.songName) {
-            document.querySelector(`.guessbox${currentGuessBox}`).classList.remove('active-box');
-            revealAnswer(data.songName, data.artistName, 'lose');
-            losingpopup.classList.add('open');
-        } else {
-            advanceActiveBox(currentGuessBox);
-            currentGuessBox++;
-        }
-    }
-
-    document.getElementById('guess').value = '';
-}
-
-// ─── Leaderboard modal ────────────────────────────────────────────────────────
-
-const leaderboardModal = document.getElementById('leaderboardModal');
-const leaderboardContent = document.getElementById('leaderboardContent');
-
-document.getElementById('leaderboardBtn').addEventListener('click', openLeaderboard);
-document.getElementById('leaderboardClose').addEventListener('click', () => {
-    leaderboardModal.classList.remove('open');
+document.querySelectorAll('.openLeaderboard').forEach(b => b.addEventListener('click', openLeaderboard));
+$('leaderboardClose').addEventListener('click', () => closeModal(leaderboardModal));
+leaderboardModal.addEventListener('click', (e) => { if (e.target === leaderboardModal) closeModal(leaderboardModal); });
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && leaderboardModal.classList.contains('open')) closeModal(leaderboardModal);
 });
 
 async function openLeaderboard() {
-    leaderboardModal.classList.add('open');
-    leaderboardContent.innerHTML = '<p class="text-outline text-sm text-center py-4">Loading...</p>';
+    openModal(leaderboardModal);
+    leaderboardContent.innerHTML = '<p class="lb-empty">Loading…</p>';
     try {
-        const res = await fetch(`${API}/leaderboard`);
-        const data = await res.json();
-        if (!data.entries || data.entries.length === 0) {
-            leaderboardContent.innerHTML = '<p class="text-outline text-sm text-center py-4">No scores yet — be the first!</p>';
+        const data = await api('/leaderboard');
+        if (!data.entries || !data.entries.length) {
+            leaderboardContent.innerHTML = '<p class="lb-empty">No scores yet — be the first!</p>';
             return;
         }
-        const hdr = 'padding:0 0 10px 0;font-size:0.65rem;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#849396;';
         leaderboardContent.innerHTML = `
-            <div style="display:grid;grid-template-columns:2rem 1fr 1.5fr 3.5rem;text-align:left;">
-                <span style="${hdr}">#</span>
-                <span style="${hdr}">Player</span>
-                <span style="${hdr}padding-left:12px;">Song</span>
-                <span style="${hdr}text-align:right;">Score</span>
-                <div style="grid-column:1/-1;border-bottom:1px solid rgba(59,73,76,0.35);margin-bottom:0;"></div>
+            <div class="lb-grid">
+                <span class="lb-head">#</span>
+                <span class="lb-head">Player</span>
+                <span class="lb-head">Song</span>
+                <span class="lb-head lb-right">Score</span>
                 ${data.entries.map((e, i) => {
-                    const c = i === 0 ? '#00daf3' : '#bac9cc';
-                    const b = `color:${c};border-bottom:1px solid rgba(59,73,76,0.2);padding:10px 0;`;
+                    const top = i === 0 ? ' lb-top' : '';
+                    const tries = e.attempts ? `${e.attempts} ${e.attempts === 1 ? 'try' : 'tries'}` : '';
                     return `
-                        <span style="${b}font-weight:700;">${i + 1}</span>
-                        <span style="${b}padding-right:8px;">${escHtml(e.username)}</span>
-                        <span style="${b}padding-left:12px;font-size:0.75rem;opacity:0.7;">${escHtml(e.song_name)}</span>
-                        <span style="${b}text-align:right;font-family:monospace;font-weight:700;">${e.score}</span>
-                    `;
+                    <span class="lb-cell lb-rank${top}">${i + 1}</span>
+                    <span class="lb-cell lb-name${top}">${escHtml(e.username)}</span>
+                    <span class="lb-cell lb-song" title="${escHtml(e.song_name)} — ${escHtml(e.artist_name)}"><span>${escHtml(e.song_name)}</span><small>${tries}</small></span>
+                    <span class="lb-cell lb-right lb-score${top}">${e.score}</span>`;
                 }).join('')}
             </div>`;
     } catch {
-        leaderboardContent.innerHTML = '<p class="text-outline text-sm text-center py-4">Failed to load leaderboard.</p>';
+        leaderboardContent.innerHTML = '<p class="lb-empty">Failed to load leaderboard.</p>';
     }
 }
 
-function escHtml(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+// ─── Boot ────────────────────────────────────────────────────────────────────
 
-window.onload = function() {
-    startGame();
-    loadPlaylist();
-};
+setControlsDisabled(true);
+buildMarkers();
+updateClipUI();
+startGame();
+loadPlaylist();
