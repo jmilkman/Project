@@ -65,6 +65,7 @@ button, input, .song-option { touch-action: manipulation; }
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+  padding-right: 0.2em; /* room for italic overhang ("Skipped") so overflow:hidden doesn't clip the last letter */
 }
 .guessbox p.correct   { color: #9affec; font-weight: 600; }
 .guessbox p.incorrect { color: #ffb4ab; }
