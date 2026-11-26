@@ -1,9 +1,17 @@
 .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
 
+html { -webkit-text-size-adjust: 100%; }
+body { -webkit-tap-highlight-color: transparent; }
+body.modal-open { overflow: hidden; }
+
+/* Remove the 300ms double-tap-zoom delay on controls */
+button, input, .song-option { touch-action: manipulation; }
+
 /* Glass panel */
 .glass-panel {
   background: rgba(11,19,38,0.6);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(195,245,255,0.1);
 }
 .neural-glow { box-shadow: 0 0 40px 0 rgba(0,218,243,0.08); }
@@ -13,41 +21,57 @@
     radial-gradient(at 100% 100%, rgba(195,245,255,0.05) 0px, transparent 50%);
 }
 
-/* Guess boxes */
-.guessbox1 p, .guessbox2 p, .guessbox3 p,
-.guessbox4 p, .guessbox5 p {
-  margin: 0;
-  font-size: 0.875rem;
-  font-family: 'Inter', sans-serif;
-  color: #bac9cc;
-  display: flex;
+/* Icon buttons (leaderboard, help, clear) — 44px tap target */
+.icon-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  height: 100%;
-  padding: 0 16px;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  color: #849396;
+  transition: color 0.2s ease, background 0.2s ease;
 }
-.guessbox1 p.correct, .guessbox2 p.correct,
-.guessbox3 p.correct, .guessbox4 p.correct,
-.guessbox5 p.correct {
-  color: #9affec;
-  font-weight: 600;
-}
-.guessbox1 p.incorrect, .guessbox2 p.incorrect,
-.guessbox3 p.incorrect, .guessbox4 p.incorrect,
-.guessbox5 p.incorrect {
-  color: #ffb4ab;
-  text-decoration: line-through;
-  opacity: 0.7;
-}
-.guessbox1, .guessbox2, .guessbox3, .guessbox4, .guessbox5 {
+.icon-btn:hover { color: #c3f5ff; background: rgba(195,245,255,0.06); }
+.icon-btn:focus-visible { outline: 2px solid #00daf3; outline-offset: 2px; }
+
+/* Guess rows */
+.guessbox {
   height: 48px;
   width: 100%;
+  min-width: 0;
   background: rgba(34,42,61,0.4);
   border-radius: 8px;
   border: 1px solid rgba(59,73,76,0.3);
   display: flex;
   align-items: center;
 }
+.guessbox p {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  color: #bac9cc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  padding: 0 14px 0 10px;
+}
+.guessbox .row-icon { font-size: 1.15rem; flex-shrink: 0; }
+.guessbox .row-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.guessbox p.correct   { color: #9affec; font-weight: 600; }
+.guessbox p.incorrect { color: #ffb4ab; }
+.guessbox p.incorrect .row-text { text-decoration: line-through; opacity: 0.75; }
+.guessbox p.skipped   { color: #849396; font-style: italic; }
+.guessbox:has(p.correct)   { border-color: rgba(154,255,236,0.35); background: rgba(154,255,236,0.06); }
+.guessbox:has(p.incorrect) { border-color: rgba(255,180,171,0.2); }
 
 /* Pending slot indicator */
 .slot-indicator {
@@ -59,6 +83,8 @@
   background: rgba(186,201,204,0.25);
   transition: background 0.3s ease;
 }
+.guessbox:has(p:not(:empty)) .slot-indicator { display: none; }
+.guessbox:has(p:not(:empty)) p { padding-left: 14px; }
 .active-box .slot-indicator {
   background: rgba(0,218,243,0.7);
   box-shadow: 0 0 6px rgba(0,218,243,0.5);
@@ -68,10 +94,7 @@
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.4; }
 }
-/* Active guess box highlight */
-.guessbox1.active-box, .guessbox2.active-box,
-.guessbox3.active-box, .guessbox4.active-box,
-.guessbox5.active-box {
+.guessbox.active-box {
   border-color: rgba(0,218,243,0.3);
   background: rgba(0,218,243,0.05);
   animation: pulse-border 2s ease-in-out infinite;
@@ -81,16 +104,57 @@
   50%       { border-color: rgba(0,218,243,0.6); }
 }
 
-/* Play button pulse */
+/* Play button */
+.play-btn:disabled { opacity: 0.4; cursor: wait; }
+.play-btn:not(:disabled):hover .play-face { transform: scale(1.05); }
+.play-btn:not(:disabled):active .play-face { transform: scale(0.95); }
+.play-btn:focus-visible .play-face { outline: 3px solid #00daf3; outline-offset: 4px; }
+.play-btn.is-playing .play-face { box-shadow: 0 0 36px rgba(0,218,243,0.45); }
 @keyframes pulse-ring {
   0%   { transform: scale(1);   opacity: 0.4; }
   100% { transform: scale(1.5); opacity: 0; }
 }
-.pulse-animation .pulse-ring {
-  animation: pulse-ring 0.8s ease-out forwards;
+.pulse-animation .pulse-ring { animation: pulse-ring 0.8s ease-out forwards; }
+
+/* Clip timeline */
+.clip-track {
+  position: relative;
+  height: 8px;
+  border-radius: 9999px;
+  background: rgba(59,73,76,0.35);
+  overflow: hidden;
+}
+.clip-unlocked {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: rgba(0,218,243,0.22);
+  transition: width 0.4s ease;
+}
+.clip-progress {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: #00daf3;
+}
+.clip-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(11,19,38,0.9);
 }
 
-/* Win/Lose overlays */
+#searchIcon { color: #849396; }
+#searchIcon.active { color: #00daf3; }
+
+.game-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+#load-status { cursor: default; }
+.status-error { color: #ffb4ab !important; }
+
+/* Win/Lose/Leaderboard overlays */
 .winningScreen, .losingScreen {
   display: none;
   position: fixed;
@@ -98,35 +162,88 @@
   z-index: 100;
   background: rgba(6,14,32,0.85);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   align-items: center;
   justify-content: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
 }
-.winningScreen.open, .losingScreen.open {
-  display: flex;
-}
+.winningScreen.open, .losingScreen.open { display: flex; }
 .winningScreen-inner, .losingScreen-inner {
   background: rgba(23,31,51,0.95);
   border: 1px solid rgba(195,245,255,0.15);
   border-radius: 24px;
-  padding: 48px;
+  padding: 40px;
   text-align: center;
   max-width: 400px;
-  width: 90%;
+  width: 100%;
+  margin: auto;
+  animation: modal-in 0.25s ease-out;
+}
+.lb-inner { max-width: 480px; text-align: left; }
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+@media (max-width: 480px) {
+  .winningScreen-inner, .losingScreen-inner { padding: 24px 20px; border-radius: 20px; }
 }
 
-/* Custom search dropdown */
+/* Leaderboard table */
+.lb-empty { color: #849396; font-size: 0.875rem; text-align: center; padding: 16px 0; }
+.lb-grid {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr) minmax(0, 1.3fr) 3.25rem;
+  column-gap: 10px;
+  text-align: left;
+  font-size: 0.875rem;
+}
+.lb-head {
+  padding-bottom: 10px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #849396;
+  border-bottom: 1px solid rgba(59,73,76,0.35);
+}
+.lb-cell {
+  color: #bac9cc;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(59,73,76,0.2);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lb-rank, .lb-score { font-weight: 700; }
+.lb-score { font-family: ui-monospace, monospace; }
+.lb-right { text-align: right; }
+.lb-top { color: #00daf3; }
+.lb-song { font-size: 0.75rem; display: flex; flex-direction: column; justify-content: center; }
+.lb-song > span { opacity: 0.8; overflow: hidden; text-overflow: ellipsis; }
+.lb-song small { font-size: 0.65rem; color: #849396; }
+
+/* Search dropdown */
+#songDropdown {
+  background: rgba(13,21,40,0.98);
+  border: 1px solid rgba(59,73,76,0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
 .song-option {
   display: flex;
   flex-direction: column;
   padding: 10px 16px;
+  min-height: 48px;
+  justify-content: center;
   cursor: pointer;
   border-bottom: 1px solid rgba(59,73,76,0.25);
   transition: background 0.15s ease;
 }
 .song-option:last-child { border-bottom: none; }
-.song-option:hover, .song-option.highlighted {
-  background: rgba(0,218,243,0.08);
-}
+.song-option:hover, .song-option.highlighted, .song-option:active { background: rgba(0,218,243,0.08); }
 .song-option .song-name {
   font-size: 0.875rem;
   font-weight: 600;
@@ -139,10 +256,8 @@
   font-family: 'Inter', sans-serif;
   margin-top: 1px;
 }
-.song-option .song-name em {
-  color: #00daf3;
-  font-style: normal;
-}
+.song-option em { color: #00daf3; font-style: normal; }
+.song-empty { padding: 14px 16px; font-size: 0.8rem; color: #849396; }
 .custom-scroll::-webkit-scrollbar { width: 4px; }
 .custom-scroll::-webkit-scrollbar-track { background: transparent; }
 .custom-scroll::-webkit-scrollbar-thumb { background: rgba(59,73,76,0.6); border-radius: 2px; }
@@ -159,10 +274,7 @@
 }
 #my-canvas.active { display: block; }
 
-/* Hidden audio player */
-#song-preview audio { display: none; }
-
-/* Empty guess shake */
+/* Empty / duplicate guess shake */
 @keyframes input-shake {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-5px); }
@@ -171,4 +283,16 @@
 .input-error {
   animation: input-shake 0.35s ease;
   border-color: rgba(255, 100, 100, 0.7) !important;
+}
+
+/* Compact layout for short phone screens (e.g. iPhone SE) so the whole game fits */
+@media (max-width: 640px) {
+  .guessbox { height: 40px; }
+}
+@media (max-width: 640px) and (max-height: 700px) {
+  .guessbox { height: 36px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guessbox.active-box, .active-box .slot-indicator, .winningScreen-inner, .losingScreen-inner { animation: none; }
 }
